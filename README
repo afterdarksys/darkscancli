@@ -1,0 +1,9 @@
+Create an open source Go-based av tool that:
+
+a. uses cgo to wrap libcamav
+b. go-yara for yara spport
+c. support mandiants capa
+d. support maniants viper framework
+c. a config file
+d. support update definitions from clamav
+

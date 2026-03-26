@@ -1,0 +1,47 @@
+{
+  "clamav": {
+    "enabled": true,
+    "database_path": "/var/lib/clamav",
+    "auto_update": false
+  },
+  "yara": {
+    "enabled": false,
+    "rules_path": ""
+  },
+  "capa": {
+    "enabled": false,
+    "exe_path": "capa",
+    "rules_path": ""
+  },
+  "viper": {
+    "enabled": false,
+    "exe_path": "viper-cli",
+    "project_name": "default"
+  },
+  "darkapi": {
+    "enabled": false,
+    "api_key": "",
+    "base_url": "https://api.darkapi.io",
+    "features": {
+      "bad_domains": true,
+      "bad_ips": true,
+      "domain_lookup": true,
+      "ip_lookup": true,
+      "bulk_lookup": true
+    }
+  },
+  "filehashes": {
+    "enabled": false,
+    "api_key": "",
+    "base_url": "https://api.filehashes.io",
+    "submit_hash": true,
+    "lookup_hash": true
+  },
+  "scan": {
+    "recursive": true,
+    "max_file_size": 104857600,
+    "exclude_extensions": [],
+    "include_extensions": [],
+    "threads": 4
+  }
+}
