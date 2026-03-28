@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/afterdarktech/darkscan/pkg/vfs"
+	"github.com/afterdarksys/darkscan/pkg/vfs"
 )
 
 // HFSPlus represents an HFS+ filesystem

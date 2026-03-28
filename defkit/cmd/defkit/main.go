@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/afterdarktech/defkit/pkg/analyzer"
-	"github.com/afterdarktech/defkit/pkg/generator/capa"
-	"github.com/afterdarktech/defkit/pkg/generator/clamav"
-	"github.com/afterdarktech/defkit/pkg/generator/yara"
+	"github.com/afterdarksys/defkit/pkg/analyzer"
+	"github.com/afterdarksys/defkit/pkg/generator/capa"
+	"github.com/afterdarksys/defkit/pkg/generator/clamav"
+	"github.com/afterdarksys/defkit/pkg/generator/yara"
 )
 
 const version = "1.0.0"
@@ -91,7 +91,7 @@ EXAMPLES:
     # Quick generation from sample
     defkit generate malware.exe --name Backdoor.Generic --format yara
 
-For more information, visit: https://github.com/afterdarktech/defkit
+For more information, visit: https://github.com/afterdarksys/defkit
 `, version)
 }
 

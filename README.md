@@ -83,7 +83,7 @@ DarkScan is an open-source, multi-engine malware scanner written in Go. It integ
 ### Build from Source
 
 ```bash
-git clone https://github.com/afterdarktech/darkscan.git
+git clone https://github.com/afterdarksys/darkscan.git
 cd darkscan
 go mod download
 go build -o darkscan ./cmd/darkscan
@@ -92,7 +92,7 @@ go build -o darkscan ./cmd/darkscan
 ### Install
 
 ```bash
-go install github.com/afterdarktech/darkscan/cmd/darkscan@latest
+go install github.com/afterdarksys/darkscan/cmd/darkscan@latest
 ```
 
 ## Quick Start
@@ -243,9 +243,9 @@ import (
     "fmt"
     "log"
 
-    "github.com/afterdarktech/darkscan/pkg/scanner"
-    "github.com/afterdarktech/darkscan/pkg/clamav"
-    "github.com/afterdarktech/darkscan/pkg/yara"
+    "github.com/afterdarksys/darkscan/pkg/scanner"
+    "github.com/afterdarksys/darkscan/pkg/clamav"
+    "github.com/afterdarksys/darkscan/pkg/yara"
 )
 
 func main() {
@@ -464,8 +464,8 @@ This tool is designed for legitimate security research, malware analysis, and sy
 
 ## Support
 
-- Issues: https://github.com/afterdarktech/darkscan/issues
-- Documentation: https://github.com/afterdarktech/darkscan/wiki
+- Issues: https://github.com/afterdarksys/darkscan/issues
+- Documentation: https://github.com/afterdarksys/darkscan/wiki
 
 ## Roadmap
 

@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/afterdarktech/darkscan/pkg/scanner"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
 )
 
 type Engine struct {

@@ -10,8 +10,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/afterdarktech/darkscan/pkg/api/server"
-	"github.com/afterdarktech/darkscan/pkg/scanner"
+	"github.com/afterdarksys/darkscan/pkg/api/server"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
 )
 
 type Client struct {

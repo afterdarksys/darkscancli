@@ -1,4 +1,4 @@
-module github.com/afterdarktech/darkscan
+module github.com/afterdarksys/darkscan
 
 go 1.25.0
 

@@ -3,8 +3,8 @@ package heuristics
 import (
 	"context"
 
-	"github.com/afterdarktech/darkscan/pkg/forensics"
-	"github.com/afterdarktech/darkscan/pkg/scanner"
+	"github.com/afterdarksys/darkscan/pkg/forensics"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
 )
 
 type Engine struct {

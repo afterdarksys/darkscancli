@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/afterdarktech/darkscan/pkg/license"
-	"github.com/afterdarktech/darkscan/pkg/vfs"
+	"github.com/afterdarksys/darkscan/pkg/license"
+	"github.com/afterdarksys/darkscan/pkg/vfs"
 )
 
 type NTFS struct {

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/afterdarktech/darkscan/pkg/vfs"
+	"github.com/afterdarksys/darkscan/pkg/vfs"
 )
 
 // VFS implements the VFS interface for HFS+

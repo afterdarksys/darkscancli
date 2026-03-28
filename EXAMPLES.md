@@ -125,8 +125,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/afterdarktech/darkscan/pkg/scanner"
-    "github.com/afterdarktech/darkscan/pkg/clamav"
+    "github.com/afterdarksys/darkscan/pkg/scanner"
+    "github.com/afterdarksys/darkscan/pkg/clamav"
 )
 
 func main() {
@@ -173,10 +173,10 @@ import (
     "context"
     "log"
 
-    "github.com/afterdarktech/darkscan/pkg/scanner"
-    "github.com/afterdarktech/darkscan/pkg/clamav"
-    "github.com/afterdarktech/darkscan/pkg/yara"
-    "github.com/afterdarktech/darkscan/pkg/capa"
+    "github.com/afterdarksys/darkscan/pkg/scanner"
+    "github.com/afterdarksys/darkscan/pkg/clamav"
+    "github.com/afterdarksys/darkscan/pkg/yara"
+    "github.com/afterdarksys/darkscan/pkg/capa"
 )
 
 func main() {
@@ -241,8 +241,8 @@ import (
     "log"
     "time"
 
-    "github.com/afterdarktech/darkscan/pkg/scanner"
-    "github.com/afterdarktech/darkscan/pkg/clamav"
+    "github.com/afterdarksys/darkscan/pkg/scanner"
+    "github.com/afterdarksys/darkscan/pkg/clamav"
 )
 
 func main() {
@@ -291,10 +291,10 @@ import (
     "log"
     "os"
 
-    "github.com/afterdarktech/darkscan/pkg/scanner"
-    "github.com/afterdarktech/darkscan/pkg/clamav"
-    "github.com/afterdarktech/darkscan/pkg/yara"
-    "github.com/afterdarktech/darkscan/pkg/capa"
+    "github.com/afterdarksys/darkscan/pkg/scanner"
+    "github.com/afterdarksys/darkscan/pkg/clamav"
+    "github.com/afterdarksys/darkscan/pkg/yara"
+    "github.com/afterdarksys/darkscan/pkg/capa"
 )
 
 type Report struct {
@@ -359,8 +359,8 @@ import (
     "log"
     "os"
 
-    "github.com/afterdarktech/darkscan/pkg/scanner"
-    "github.com/afterdarktech/darkscan/pkg/clamav"
+    "github.com/afterdarksys/darkscan/pkg/scanner"
+    "github.com/afterdarksys/darkscan/pkg/clamav"
 )
 
 func scanAttachment(reader io.Reader, name string) (bool, error) {
@@ -440,8 +440,8 @@ import (
     "os"
     "path/filepath"
 
-    "github.com/afterdarktech/darkscan/pkg/scanner"
-    "github.com/afterdarktech/darkscan/pkg/clamav"
+    "github.com/afterdarksys/darkscan/pkg/scanner"
+    "github.com/afterdarksys/darkscan/pkg/clamav"
 )
 
 func scanAndQuarantine(filePath, quarantineDir string) error {

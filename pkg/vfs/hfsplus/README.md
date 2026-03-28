@@ -64,7 +64,7 @@ hfsplus/
 ### Basic File Access
 
 ```go
-import "github.com/afterdarktech/darkscan/pkg/vfs/hfsplus"
+import "github.com/afterdarksys/darkscan/pkg/vfs/hfsplus"
 
 // Open HFS+ volume
 partition := ... // Your partition/disk source
@@ -356,8 +356,8 @@ import (
     "log"
     "os"
 
-    "github.com/afterdarktech/darkscan/pkg/vfs/hfsplus"
-    "github.com/afterdarktech/darkscan/pkg/vfs/local"
+    "github.com/afterdarksys/darkscan/pkg/vfs/hfsplus"
+    "github.com/afterdarksys/darkscan/pkg/vfs/local"
 )
 
 func main() {

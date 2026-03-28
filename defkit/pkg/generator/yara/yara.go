@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/afterdarktech/defkit/pkg/analyzer"
+	"github.com/afterdarksys/defkit/pkg/analyzer"
 )
 
 // Rule represents a YARA rule

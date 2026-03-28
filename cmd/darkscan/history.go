@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/afterdarktech/darkscan/pkg/store"
+	"github.com/afterdarksys/darkscan/pkg/store"
 	"github.com/spf13/cobra"
 )
 

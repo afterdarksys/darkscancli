@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/afterdarktech/darkscan/pkg/filetype"
+	"github.com/afterdarksys/darkscan/pkg/filetype"
 )
 
 type FileFeatures struct {

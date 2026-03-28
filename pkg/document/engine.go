@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/afterdarktech/darkscan/pkg/scanner"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
 )
 
 // DocumentEngine implements scanner.Engine for analyzing PDFs and Office Docs

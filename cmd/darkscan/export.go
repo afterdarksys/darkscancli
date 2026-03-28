@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/afterdarktech/darkscan/pkg/scanner"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
 )
 
 // ExportFormat defines the supported export formats

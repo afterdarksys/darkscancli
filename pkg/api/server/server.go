@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/afterdarktech/darkscan/pkg/scanner"
-	"github.com/afterdarktech/darkscan/pkg/vfs/local"
-	"github.com/afterdarktech/darkscan/pkg/vfs/nfs"
-	"github.com/afterdarktech/darkscan/pkg/vfs/ntfs"
-	"github.com/afterdarktech/darkscan/pkg/vfs/s3"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
+	"github.com/afterdarksys/darkscan/pkg/vfs/local"
+	"github.com/afterdarksys/darkscan/pkg/vfs/nfs"
+	"github.com/afterdarksys/darkscan/pkg/vfs/ntfs"
+	"github.com/afterdarksys/darkscan/pkg/vfs/s3"
 )
 
 type Server struct {

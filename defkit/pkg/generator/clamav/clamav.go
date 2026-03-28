@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/afterdarktech/defkit/pkg/analyzer"
+	"github.com/afterdarksys/defkit/pkg/analyzer"
 )
 
 // SignatureType represents ClamAV signature format

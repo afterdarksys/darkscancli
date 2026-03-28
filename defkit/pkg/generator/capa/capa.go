@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/afterdarktech/defkit/pkg/analyzer"
+	"github.com/afterdarksys/defkit/pkg/analyzer"
 )
 
 // Rule represents a CAPA rule for behavioral detection

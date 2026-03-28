@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/afterdarktech/darkscan/pkg/vfs/hfsplus"
+	"github.com/afterdarksys/darkscan/pkg/vfs/hfsplus"
 )
 
 // ExampleVFS demonstrates basic HFS+ VFS usage

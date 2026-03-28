@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/afterdarktech/darkscan/pkg/config"
-	"github.com/afterdarktech/darkscan/pkg/store"
+	"github.com/afterdarksys/darkscan/pkg/config"
+	"github.com/afterdarksys/darkscan/pkg/store"
 	"github.com/spf13/cobra"
 )
 

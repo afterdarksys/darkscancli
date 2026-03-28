@@ -11,8 +11,8 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/afterdarktech/darkscan/pkg/heuristics"
-	"github.com/afterdarktech/darkscan/pkg/scanner"
+	"github.com/afterdarksys/darkscan/pkg/heuristics"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
 )
 
 var (

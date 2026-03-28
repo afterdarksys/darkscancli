@@ -10,10 +10,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/afterdarktech/darkscan/pkg/archive"
-	"github.com/afterdarktech/darkscan/pkg/fsutil"
-	"github.com/afterdarktech/darkscan/pkg/vfs"
-	"github.com/afterdarktech/darkscan/pkg/worker"
+	"github.com/afterdarksys/darkscan/pkg/archive"
+	"github.com/afterdarksys/darkscan/pkg/fsutil"
+	"github.com/afterdarksys/darkscan/pkg/vfs"
+	"github.com/afterdarksys/darkscan/pkg/worker"
 )
 
 type ScanResult struct {

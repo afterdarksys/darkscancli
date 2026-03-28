@@ -3,8 +3,8 @@
 package main
 
 import (
-	"github.com/afterdarktech/darkscan/pkg/clamav"
-	"github.com/afterdarktech/darkscan/pkg/scanner"
+	"github.com/afterdarksys/darkscan/pkg/clamav"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
 )
 
 func registerClamAV(s *scanner.Scanner) {

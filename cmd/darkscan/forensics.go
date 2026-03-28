@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/afterdarktech/darkscan/pkg/forensics"
+	"github.com/afterdarksys/darkscan/pkg/forensics"
 	"github.com/spf13/cobra"
 )
 

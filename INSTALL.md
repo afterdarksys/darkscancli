@@ -95,7 +95,7 @@ sudo freshclam
 
 ```bash
 # Clone the repository
-git clone https://github.com/afterdarktech/darkscan.git
+git clone https://github.com/afterdarksys/darkscan.git
 cd darkscan
 
 # Download Go dependencies
@@ -112,7 +112,7 @@ go build -o darkscan ./cmd/darkscan
 
 ```bash
 # Clone the repository
-git clone https://github.com/afterdarktech/darkscan.git
+git clone https://github.com/afterdarksys/darkscan.git
 cd darkscan
 
 # Build

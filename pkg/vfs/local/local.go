@@ -4,8 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/afterdarktech/darkscan/pkg/fsutil"
-	"github.com/afterdarktech/darkscan/pkg/vfs"
+	"github.com/afterdarksys/darkscan/pkg/fsutil"
+	"github.com/afterdarksys/darkscan/pkg/vfs"
 )
 
 type LocalFS struct{}

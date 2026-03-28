@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/afterdarktech/darkscan/pkg/config"
-	"github.com/afterdarktech/darkscan/pkg/profiles"
+	"github.com/afterdarksys/darkscan/pkg/config"
+	"github.com/afterdarksys/darkscan/pkg/profiles"
 	"github.com/spf13/cobra"
 )
 

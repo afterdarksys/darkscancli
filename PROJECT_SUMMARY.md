@@ -110,7 +110,7 @@ darkscan/
 
 ### Quick Start
 ```bash
-git clone https://github.com/afterdarktech/darkscan.git
+git clone https://github.com/afterdarksys/darkscan.git
 cd darkscan
 make build
 sudo make install
@@ -141,8 +141,8 @@ darkscan scan -r /path/to/directory
 ### Library
 ```go
 import (
-    "github.com/afterdarktech/darkscan/pkg/scanner"
-    "github.com/afterdarktech/darkscan/pkg/clamav"
+    "github.com/afterdarksys/darkscan/pkg/scanner"
+    "github.com/afterdarksys/darkscan/pkg/clamav"
 )
 
 s := scanner.New()
@@ -265,7 +265,7 @@ MIT License - See [LICENSE](LICENSE) file
 
 - **Issues**: GitHub Issues
 - **Documentation**: README.md, INSTALL.md, EXAMPLES.md
-- **Source**: https://github.com/afterdarktech/darkscan
+- **Source**: https://github.com/afterdarksys/darkscan
 
 ## Roadmap
 

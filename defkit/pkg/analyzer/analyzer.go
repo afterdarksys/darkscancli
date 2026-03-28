@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/afterdarktech/defkit/internal/hash"
-	"github.com/afterdarktech/defkit/internal/pattern"
-	"github.com/afterdarktech/defkit/internal/sample"
+	"github.com/afterdarksys/defkit/internal/hash"
+	"github.com/afterdarksys/defkit/internal/pattern"
+	"github.com/afterdarksys/defkit/internal/sample"
 )
 
 // Analysis contains comprehensive analysis results

@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/afterdarktech/darkscan/pkg/vfs"
+	"github.com/afterdarksys/darkscan/pkg/vfs"
 	nfsclient "github.com/vmware/go-nfs-client/nfs"
 	"github.com/vmware/go-nfs-client/nfs/rpc"
 )

@@ -1,4 +1,4 @@
-module github.com/afterdarktech/defkit
+module github.com/afterdarksys/defkit
 
 go 1.23
 
