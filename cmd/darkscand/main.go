@@ -15,15 +15,17 @@ import (
 	"github.com/afterdarktech/darkscan/pkg/config"
 	"github.com/afterdarktech/darkscan/pkg/document"
 	"github.com/afterdarktech/darkscan/pkg/heuristics"
+	"github.com/afterdarktech/darkscan/pkg/license"
 	"github.com/afterdarktech/darkscan/pkg/scanner"
 	"github.com/afterdarktech/darkscan/pkg/yara"
 	"github.com/spf13/cobra"
 )
 
 var (
-	configPath string
-	listenAddr string
-	unixSocket string
+	configPath  string
+	licensePath string
+	listenAddr  string
+	unixSocket  string
 )
 
 var rootCmd = &cobra.Command{
@@ -35,6 +37,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	defaultConfigPath, _ := config.GetDefaultConfigPath()
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config", "c", defaultConfigPath, "Config file path")
+	rootCmd.PersistentFlags().StringVar(&licensePath, "license", "/etc/darkscan/license.json", "Commercial license file path")
 	rootCmd.PersistentFlags().StringVarP(&listenAddr, "listen", "l", "127.0.0.1:8080", "TCP address to listen on")
 	rootCmd.PersistentFlags().StringVarP(&unixSocket, "socket", "s", "/tmp/darkscand.sock", "Unix socket path to listen on")
 }
@@ -72,6 +75,12 @@ func runServer(cmd *cobra.Command, args []string) error {
 	cfg, err := loadConfig()
 	if err != nil {
 		return fmt.Errorf("config error: %w", err)
+	}
+
+	if err := license.Load(licensePath); err != nil {
+		log.Printf("Notice: No valid commercial license found at %s. Running in community mode.", licensePath)
+	} else {
+		log.Printf("Commercial license loaded (Customer: %s)", license.GetActive().Customer)
 	}
 
 	// Create root context for the server lifecycle

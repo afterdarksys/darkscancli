@@ -1,0 +1,18 @@
+{
+  "name": "EICAR-AV-Test",
+  "namespace": "malware/unknown",
+  "authors": [
+    "defkit"
+  ],
+  "scope": "file",
+  "examples": [
+    "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"
+  ],
+  "features": [
+    {
+      "type": "characteristic",
+      "value": "format:unknown",
+      "description": "file format"
+    }
+  ]
+}

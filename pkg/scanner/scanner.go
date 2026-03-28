@@ -62,6 +62,20 @@ func (s *Scanner) SetVFS(fs vfs.FileSystem) {
 	s.FS = fs
 }
 
+// WithVFS returns a shallow copy of the Scanner bound to a specific VFS instance.
+// This allows thread-safe concurrent scans across different virtual filesystems
+// without duplicating the heavy scanning engines in memory.
+func (s *Scanner) WithVFS(fs vfs.FileSystem) *Scanner {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return &Scanner{
+		engines:          s.engines,
+		archiveManager:   s.archiveManager,
+		passwordCallback: s.passwordCallback,
+		FS:               fs,
+	}
+}
+
 func (s *Scanner) RegisterEngine(engine Engine) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

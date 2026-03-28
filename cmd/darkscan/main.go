@@ -20,11 +20,13 @@ import (
 	"github.com/afterdarktech/darkscan/pkg/document"
 	"github.com/afterdarktech/darkscan/pkg/forensics"
 	"github.com/afterdarktech/darkscan/pkg/heuristics"
+	"github.com/afterdarktech/darkscan/pkg/license"
 	"github.com/afterdarktech/darkscan/pkg/quarantine"
 	"github.com/afterdarktech/darkscan/pkg/scanner"
 	"github.com/afterdarktech/darkscan/pkg/store"
 	"github.com/afterdarktech/darkscan/pkg/vfs/local"
 	"github.com/afterdarktech/darkscan/pkg/vfs/nfs"
+	"github.com/afterdarktech/darkscan/pkg/vfs/ntfs"
 	"github.com/afterdarktech/darkscan/pkg/vfs/s3"
 	"github.com/afterdarktech/darkscan/pkg/viper"
 	"github.com/afterdarktech/darkscan/pkg/yara"
@@ -33,6 +35,7 @@ import (
 
 var (
 	configPath        string
+	licensePath       string
 	outputFormat      string
 	outputFile        string
 	scanProfile       string
@@ -106,6 +109,7 @@ func init() {
 	defaultConfigPath, _ := config.GetDefaultConfigPath()
 
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config", "c", defaultConfigPath, "Config file path")
+	rootCmd.PersistentFlags().StringVarP(&licensePath, "license", "l", "license.json", "Commercial license file path")
 	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "text", "Output format (text, json, csv, xml)")
 	rootCmd.PersistentFlags().StringVar(&outputFile, "output-file", "", "Output file for export formats (default: stdout)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
@@ -150,6 +154,15 @@ func main() {
 
 func runScan(cmd *cobra.Command, args []string) error {
 	path := args[0]
+
+	// Load potential license file
+	if err := license.Load(licensePath); err != nil {
+		if verbose {
+			fmt.Printf("Warning: Could not load license (%v). Advanced capabilities will be restricted.\n", err)
+		}
+	} else if verbose {
+		fmt.Printf("Commercial license loaded (Customer: %s)\n", license.GetActive().Customer)
+	}
 
 	// Load profile if specified
 	if scanProfile != "" {
@@ -277,6 +290,19 @@ func runScan(cmd *cobra.Command, args []string) error {
 		s.SetVFS(fs)
 		path = "/" // Root of the mount
 		fmt.Printf("Connected to NFS Target: %s@%s\n", mount, host)
+	} else if strings.HasPrefix(path, "ntfs://") {
+		imgPath := strings.TrimPrefix(path, "ntfs://")
+		part, err := local.NewPartition(imgPath)
+		if err != nil {
+			return fmt.Errorf("failed to open ntfs source: %w", err)
+		}
+		fs, err := ntfs.New(part)
+		if err != nil {
+			return fmt.Errorf("failed to setup ntfs vfs: %w", err)
+		}
+		s.SetVFS(fs)
+		path = "/"
+		fmt.Printf("Connected to NTFS Raw Partition: %s\n", imgPath)
 	} else {
 		s.SetVFS(local.New())
 	}

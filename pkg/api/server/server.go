@@ -14,6 +14,10 @@ import (
 	"time"
 
 	"github.com/afterdarktech/darkscan/pkg/scanner"
+	"github.com/afterdarktech/darkscan/pkg/vfs/local"
+	"github.com/afterdarktech/darkscan/pkg/vfs/nfs"
+	"github.com/afterdarktech/darkscan/pkg/vfs/ntfs"
+	"github.com/afterdarktech/darkscan/pkg/vfs/s3"
 )
 
 type Server struct {
@@ -249,17 +253,71 @@ func (s *Server) handleScanLocal(w http.ResponseWriter, r *http.Request) {
 	
 	var results []*scanner.ScanResult
 	var err error
+
+	scanClient := s.scanner
+
+	if strings.HasPrefix(req.Path, "s3://") {
+		parts := strings.SplitN(strings.TrimPrefix(req.Path, "s3://"), "/", 2)
+		bucket := parts[0]
+		key := ""
+		if len(parts) > 1 {
+			key = parts[1]
+		}
+		fs, err := s3.New(context.Background(), bucket)
+		if err != nil {
+			s.sendError(w, "Failed to setup s3 vfs: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		scanClient = s.scanner.WithVFS(fs)
+		req.Path = key
+	} else if strings.HasPrefix(req.Path, "nfs://") {
+		parts := strings.SplitN(strings.TrimPrefix(req.Path, "nfs://"), "/", 2)
+		host := parts[0]
+		mount := "/"
+		if len(parts) > 1 {
+			mount = "/" + parts[1]
+		}
+		fs, err := nfs.New(host, mount)
+		if err != nil {
+			s.sendError(w, "Failed to setup nfs vfs: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		scanClient = s.scanner.WithVFS(fs)
+		req.Path = "/"
+	} else if strings.HasPrefix(req.Path, "ntfs://") {
+		imgPath := strings.TrimPrefix(req.Path, "ntfs://")
+		part, err := local.NewPartition(imgPath)
+		if err != nil {
+			s.sendError(w, "Failed to open ntfs source: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fs, err := ntfs.New(part)
+		if err != nil {
+			s.sendError(w, "Failed to setup ntfs vfs: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		scanClient = s.scanner.WithVFS(fs)
+		req.Path = "/"
+	} else {
+		scanClient = s.scanner.WithVFS(local.New())
+	}
 	
-	info, err := os.Stat(req.Path)
+	var info os.FileInfo
+	if scanClient.FS != nil {
+		info, err = scanClient.FS.Stat(req.Path)
+	} else {
+		info, err = os.Stat(req.Path)
+	}
+
 	if err != nil {
 		s.sendError(w, "File not found or inaccessible: "+err.Error(), http.StatusNotFound)
 		return
 	}
 	
 	if info.IsDir() {
-		results, err = s.scanner.ScanDirectory(ctx, req.Path, req.Recursive)
+		results, err = scanClient.ScanDirectory(ctx, req.Path, req.Recursive)
 	} else {
-		results, err = s.scanner.ScanFile(ctx, req.Path)
+		results, err = scanClient.ScanFile(ctx, req.Path)
 	}
 
 	if err != nil {
