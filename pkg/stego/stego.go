@@ -465,8 +465,10 @@ func calculatePixelEntropy(pixels []uint32) float64 {
 }
 
 func chiSquareTest(histogram map[uint32]int, total int) (float64, float64) {
-	// Simplified chi-square test
-	// Expected frequency if uniform
+	if len(histogram) == 0 || total == 0 {
+		return 0, 1
+	}
+
 	expectedFreq := float64(total) / float64(len(histogram))
 
 	var chiSquare float64
@@ -475,10 +477,19 @@ func chiSquareTest(histogram map[uint32]int, total int) (float64, float64) {
 		chiSquare += (diff * diff) / expectedFreq
 	}
 
-	// Simplified p-value calculation (approximate)
-	// Real implementation would use chi-square distribution
-	degreesOfFreedom := len(histogram) - 1
-	pValue := 1.0 - (chiSquare / float64(degreesOfFreedom*10))
+	// Wilson-Hilferty approximation for chi-square upper-tail p-value.
+	// Accurate for df > 1 (which always holds for a non-trivial histogram).
+	df := float64(len(histogram) - 1)
+	if df <= 0 {
+		return chiSquare, 1
+	}
+	h := math.Pow(chiSquare/df, 1.0/3.0)
+	mu := 1 - 2/(9*df)
+	sigma := math.Sqrt(2 / (9 * df))
+	z := (h - mu) / sigma
+
+	// Upper-tail: P(X² > observed) = P(Z > z) = 0.5 * erfc(z / sqrt(2))
+	pValue := 0.5 * math.Erfc(z/math.Sqrt2)
 	if pValue < 0 {
 		pValue = 0
 	}

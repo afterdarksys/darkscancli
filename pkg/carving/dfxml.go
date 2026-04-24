@@ -118,6 +118,13 @@ func (r *DFXMLReport) AddCarvedFile(file *CarvedFile, outputFilename string) {
 		},
 	}
 
+	if file.MD5 != "" || file.SHA256 != "" {
+		fileObj.HashDigest = &HashDigest{
+			MD5:    file.MD5,
+			SHA256: file.SHA256,
+		}
+	}
+
 	r.Files = append(r.Files, fileObj)
 }
 

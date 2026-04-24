@@ -1,6 +1,7 @@
 package carving
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -282,19 +283,5 @@ func containsPattern(data, pattern []byte) bool {
 	if len(pattern) == 0 {
 		return false
 	}
-
-	for i := 0; i <= len(data)-len(pattern); i++ {
-		match := true
-		for j := 0; j < len(pattern); j++ {
-			if data[i+j] != pattern[j] {
-				match = false
-				break
-			}
-		}
-		if match {
-			return true
-		}
-	}
-
-	return false
+	return bytes.Contains(data, pattern)
 }

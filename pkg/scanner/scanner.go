@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"sync"
 
 	"github.com/afterdarksys/darkscan/pkg/archive"
@@ -209,7 +208,7 @@ func (s *Scanner) scanSingleTargetAndExtract(ctx context.Context, path string) (
 	if extErr == nil && len(extracted) > 0 {
 		for _, ex := range extracted {
 			if ex.IsMem {
-				memReader := strings.NewReader(string(ex.Content))
+				memReader := bytes.NewReader(ex.Content)
 				res, _ := s.ScanReader(ctx, memReader, path+"->"+ex.Name)
 				results = append(results, res...)
 			} else {
@@ -247,7 +246,7 @@ func (s *Scanner) scanSingleTargetAndExtract(ctx context.Context, path string) (
 					val, err = fsutil.GetXattr(path, attr)
 				}
 				if err == nil && len(val) > 0 {
-					memReader := strings.NewReader(string(val))
+					memReader := bytes.NewReader(val)
 					res, _ := s.ScanReader(ctx, memReader, path+"@"+attr)
 					results = append(results, res...)
 				}

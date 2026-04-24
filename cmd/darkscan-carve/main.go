@@ -2,9 +2,13 @@ package main
 
 import (
 	"context"
+	"encoding/xml"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/afterdarksys/darkscan/pkg/carving"
@@ -129,6 +133,16 @@ func runScan(cmd *cobra.Command, args []string) error {
 		opts.Signatures = filterSignatures(scanTypes)
 	}
 
+	if verbose {
+		opts.Progress = func(offset, total int64, filesFound int) {
+			pct := int64(0)
+			if total > 0 {
+				pct = offset * 100 / total
+			}
+			fmt.Printf("\rScanning: %d%% (%d files found)", pct, filesFound)
+		}
+	}
+
 	carver := carving.NewCarver(opts)
 
 	// Create DFXML report
@@ -152,11 +166,27 @@ func runScan(cmd *cobra.Command, args []string) error {
 
 	duration := time.Since(startTime)
 
+	if verbose {
+		fmt.Printf("\n")
+	}
+
 	// Save carved files and populate report
 	savedCount := 0
+	seen := make(map[string]bool)
 	for i, file := range carved {
 		if file.Confidence < minConfidence {
 			continue
+		}
+
+		// Deduplication by SHA-256
+		if file.SHA256 != "" {
+			if seen[file.SHA256] {
+				if verbose {
+					fmt.Printf("  Skipping duplicate (sha256: %s)\n", file.SHA256[:16])
+				}
+				continue
+			}
+			seen[file.SHA256] = true
 		}
 
 		// Generate output filename
@@ -225,10 +255,88 @@ func runRecover(cmd *cobra.Command, args []string) error {
 	fmt.Printf("Recovering files from report: %s\n", reportPath)
 	fmt.Printf("Output directory: %s\n", outputDir)
 
-	// TODO: Implement DFXML report parsing and recovery
-	// This would read the DFXML report and extract files based on byte runs
+	// Parse DFXML report
+	xmlData, err := os.ReadFile(reportPath)
+	if err != nil {
+		return fmt.Errorf("read report: %w", err)
+	}
 
-	return fmt.Errorf("recover command not yet implemented")
+	var report carving.DFXMLReport
+	if err := xml.Unmarshal(xmlData, &report); err != nil {
+		return fmt.Errorf("parse report: %w", err)
+	}
+
+	// Open source image
+	partition, err := local.NewPartition(report.Source.ImageFilename)
+	if err != nil {
+		return fmt.Errorf("open source image %s: %w", report.Source.ImageFilename, err)
+	}
+	defer partition.Close()
+
+	// Create output directory
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		return fmt.Errorf("create output directory: %w", err)
+	}
+
+	// Build type filter map
+	typeFilter := make(map[string]bool)
+	for _, t := range scanTypes {
+		typeFilter[strings.ToLower(t)] = true
+	}
+
+	recovered := 0
+	skipped := 0
+	errors := 0
+
+	for _, file := range report.Files {
+		// Skip below confidence threshold
+		if file.CarvingInfo != nil && file.CarvingInfo.Confidence < minConfidence {
+			skipped++
+			continue
+		}
+
+		// Skip filtered types
+		if len(typeFilter) > 0 && !typeFilter[strings.ToLower(file.FileType)] {
+			skipped++
+			continue
+		}
+
+		// Concatenate all byte runs
+		var fileData []byte
+		for _, run := range file.ByteRuns {
+			buf := make([]byte, run.Length)
+			n, err := partition.ReadAt(buf, run.ImageOffset)
+			if err != nil && err != io.EOF {
+				fmt.Printf("  Error reading %s at offset %d: %v\n", file.Filename, run.ImageOffset, err)
+				errors++
+				break
+			}
+			fileData = append(fileData, buf[:n]...)
+		}
+
+		if len(fileData) == 0 {
+			skipped++
+			continue
+		}
+
+		// Write to output directory
+		outPath := filepath.Join(outputDir, filepath.Base(file.Filename))
+		if err := os.WriteFile(outPath, fileData, 0644); err != nil {
+			fmt.Printf("  Error writing %s: %v\n", file.Filename, err)
+			errors++
+			continue
+		}
+
+		recovered++
+		fmt.Printf("  Recovered: %s (%d bytes)\n", filepath.Base(file.Filename), len(fileData))
+	}
+
+	fmt.Printf("\n=== Recovery Complete ===\n")
+	fmt.Printf("Recovered: %d files\n", recovered)
+	fmt.Printf("Skipped:   %d files\n", skipped)
+	fmt.Printf("Errors:    %d\n", errors)
+
+	return nil
 }
 
 func listFormats(cmd *cobra.Command, args []string) error {
@@ -261,24 +369,72 @@ func listFormats(cmd *cobra.Command, args []string) error {
 func showStats(cmd *cobra.Command, args []string) error {
 	reportPath := args[0]
 
-	fmt.Printf("Loading statistics from: %s\n", reportPath)
+	xmlData, err := os.ReadFile(reportPath)
+	if err != nil {
+		return fmt.Errorf("read report: %w", err)
+	}
 
-	// TODO: Parse DFXML report and show statistics
-	// This would read the report and display detailed statistics
+	var report carving.DFXMLReport
+	if err := xml.Unmarshal(xmlData, &report); err != nil {
+		return fmt.Errorf("parse report: %w", err)
+	}
 
-	return fmt.Errorf("stats command not yet implemented")
+	stats := report.GetStatistics()
+
+	fmt.Printf("=== DFXML Report Statistics ===\n\n")
+	fmt.Printf("Source image:       %s\n", report.Source.ImageFilename)
+	fmt.Printf("Scan type:          %s\n", report.RunInfo.ScanType)
+
+	if !report.RunInfo.StartTime.IsZero() {
+		fmt.Printf("Start time:         %s\n", report.RunInfo.StartTime.Format(time.RFC3339))
+	}
+	if !report.RunInfo.EndTime.IsZero() {
+		fmt.Printf("End time:           %s\n", report.RunInfo.EndTime.Format(time.RFC3339))
+		if !report.RunInfo.StartTime.IsZero() {
+			duration := report.RunInfo.EndTime.Sub(report.RunInfo.StartTime)
+			fmt.Printf("Scan duration:      %s\n", duration)
+		}
+	}
+
+	fmt.Printf("\n--- File Summary ---\n")
+	fmt.Printf("Total files:        %d\n", stats.TotalFiles)
+	fmt.Printf("Total bytes:        %.2f MB\n", float64(stats.TotalBytes)/1024/1024)
+	fmt.Printf("Average confidence: %.1f%%\n", stats.AverageConfidence)
+	fmt.Printf("Complete files:     %d\n", stats.CompleteFiles)
+	fmt.Printf("Fragmented files:   %d\n", stats.FragmentedFiles)
+
+	if len(stats.FilesByType) > 0 {
+		fmt.Printf("\n--- Files by Type ---\n")
+
+		type typeCount struct {
+			name  string
+			count int
+		}
+		sorted := make([]typeCount, 0, len(stats.FilesByType))
+		for t, c := range stats.FilesByType {
+			sorted = append(sorted, typeCount{t, c})
+		}
+		sort.Slice(sorted, func(i, j int) bool {
+			return sorted[i].count > sorted[j].count
+		})
+		for _, tc := range sorted {
+			fmt.Printf("  %-20s %d\n", tc.name, tc.count)
+		}
+	}
+
+	return nil
 }
 
 func filterSignatures(types []string) []carving.FileSignature {
-	var filtered []carving.FileSignature
+	filtered := make([]carving.FileSignature, 0)
 
 	typeMap := make(map[string]bool)
 	for _, t := range types {
-		typeMap[t] = true
+		typeMap[strings.ToLower(t)] = true
 	}
 
 	for _, sig := range carving.Signatures {
-		if typeMap[sig.Extension] || typeMap[sig.Category] {
+		if typeMap[strings.ToLower(sig.Extension)] || typeMap[strings.ToLower(sig.Category)] {
 			filtered = append(filtered, sig)
 		}
 	}

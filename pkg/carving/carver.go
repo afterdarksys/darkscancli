@@ -3,8 +3,11 @@ package carving
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
+	"crypto/sha256"
 	"fmt"
 	"io"
+	"math"
 	"sync"
 )
 
@@ -22,7 +25,12 @@ type CarvedFile struct {
 	IsFragmented bool         // Whether file appears fragmented
 	Confidence  int           // Confidence score (0-100)
 	ValidationErrors []string  // Validation issues found
+	MD5    string
+	SHA256 string
 }
+
+// ProgressFunc is called periodically during carving with current progress.
+type ProgressFunc func(offset, total int64, filesFound int)
 
 // Carver performs file carving operations
 type Carver struct {
@@ -32,6 +40,7 @@ type Carver struct {
 	minConfidence int
 	validateFiles bool
 	mu            sync.RWMutex
+	Progress      ProgressFunc
 }
 
 // Options for carver configuration
@@ -41,6 +50,7 @@ type Options struct {
 	MinConfidence int   // Minimum confidence to report (default: 50)
 	ValidateFiles bool  // Whether to validate carved files (default: true)
 	Signatures    []FileSignature // Custom signatures (default: all)
+	Progress      ProgressFunc
 }
 
 // NewCarver creates a new file carver
@@ -66,6 +76,7 @@ func NewCarver(opts Options) *Carver {
 		maxFileSize:   opts.MaxFileSize,
 		minConfidence: opts.MinConfidence,
 		validateFiles: opts.ValidateFiles,
+		Progress:      opts.Progress,
 	}
 }
 
@@ -116,6 +127,13 @@ func (c *Carver) CarveReader(ctx context.Context, r io.ReaderAt, startOffset, le
 
 		// Move to next block with overlap to catch signatures spanning blocks
 		offset += c.blockSize
+
+		if c.Progress != nil {
+			mu.Lock()
+			filesFound := len(carved)
+			mu.Unlock()
+			c.Progress(offset-startOffset, length, filesFound)
+		}
 	}
 
 	return carved, nil
@@ -225,6 +243,12 @@ func (c *Carver) carveFile(ctx context.Context, r io.ReaderAt, offset int64, sig
 		return nil, fmt.Errorf("file too small: %d < %d", file.Size, sig.MinSize)
 	}
 
+	// Compute hashes
+	md5sum := md5.Sum(file.Data)
+	sha256sum := sha256.Sum256(file.Data)
+	file.MD5 = fmt.Sprintf("%x", md5sum)
+	file.SHA256 = fmt.Sprintf("%x", sha256sum)
+
 	// Validate if enabled
 	if c.validateFiles {
 		c.validateFile(file)
@@ -276,22 +300,51 @@ func (c *Carver) estimateFileSize(data []byte, sig FileSignature) int64 {
 
 // estimateExecutableSize estimates size of executable files
 func (c *Carver) estimateExecutableSize(data []byte, sig FileSignature) int64 {
-	// For PE files, read size from header
-	if sig.Extension == "exe" && len(data) >= 64 {
-		// PE header is at offset 0x3C
-		if data[0] == 0x4D && data[1] == 0x5A {
-			// This is a simplified version - real PE parsing is more complex
-			// Would need to read PE header to get actual size
+	if sig.Extension == "exe" || sig.Extension == "dll" {
+		if len(data) < 0x40 {
+			return 0
+		}
+		peOffset := int64(data[0x3C]) | int64(data[0x3D])<<8 | int64(data[0x3E])<<16 | int64(data[0x3F])<<24
+		if peOffset+4 > int64(len(data)) {
+			return 0
+		}
+		if data[peOffset] != 'P' || data[peOffset+1] != 'E' {
+			return 0
+		}
+		sizeOffset := peOffset + 0x50
+		if sizeOffset+4 > int64(len(data)) {
+			return 0
+		}
+		size := int64(data[sizeOffset]) | int64(data[sizeOffset+1])<<8 | int64(data[sizeOffset+2])<<16 | int64(data[sizeOffset+3])<<24
+		if size > 0 {
+			return size
 		}
 	}
 
-	// For ELF, read from ELF header
-	if sig.Extension == "elf" && len(data) >= 52 {
-		// ELF header contains section information
-		// Simplified - real implementation would parse ELF structure
+	if sig.Extension == "elf" {
+		if len(data) < 52 {
+			return 0
+		}
+		elfClass := data[4]
+		var shoff, shentsize, shnum int64
+		if elfClass == 1 {
+			shoff = int64(data[0x20]) | int64(data[0x21])<<8 | int64(data[0x22])<<16 | int64(data[0x23])<<24
+			shentsize = int64(data[0x2E]) | int64(data[0x2F])<<8
+			shnum = int64(data[0x30]) | int64(data[0x31])<<8
+		} else if elfClass == 2 {
+			if len(data) < 64 {
+				return 0
+			}
+			shoff = int64(data[0x28]) | int64(data[0x29])<<8 | int64(data[0x2A])<<16 | int64(data[0x2B])<<24
+			shentsize = int64(data[0x3A]) | int64(data[0x3B])<<8
+			shnum = int64(data[0x3C]) | int64(data[0x3D])<<8
+		}
+		if shoff > 0 && shentsize > 0 && shnum > 0 {
+			return shoff + shentsize*shnum
+		}
 	}
 
-	return 0 // Unable to determine, will use max size
+	return 0
 }
 
 // estimateImageSize estimates size of image files
@@ -402,36 +455,11 @@ func calculateEntropy(data []byte) float64 {
 	for _, count := range freq {
 		if count > 0 {
 			p := float64(count) / length
-			entropy -= p * log2(p)
+			entropy -= p * math.Log2(p)
 		}
 	}
 
 	return entropy
-}
-
-func log2(x float64) float64 {
-	if x == 0 {
-		return 0
-	}
-	const ln2 = 0.693147180559945309417
-	return naturalLog(x) / ln2
-}
-
-func naturalLog(x float64) float64 {
-	if x <= 0 {
-		return 0
-	}
-	y := (x - 1) / (x + 1)
-	y2 := y * y
-	sum := y
-	term := y
-
-	for i := 1; i < 100; i++ {
-		term *= y2
-		sum += term / float64(2*i+1)
-	}
-
-	return 2 * sum
 }
 
 func countNullBytes(data []byte) int {
