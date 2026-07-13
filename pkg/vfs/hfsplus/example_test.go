@@ -2,7 +2,6 @@ package hfsplus_test
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/afterdarksys/darkscan/pkg/vfs/hfsplus"
 )
@@ -25,7 +24,7 @@ func ExampleVFS() {
 	// fmt.Printf("Total Folders: %d\n", info.FolderCount)
 	// fmt.Printf("Journaled: %v\n", info.IsJournaled)
 
-	// Output:
+	// Example output:
 	// Volume Type: HFS+
 	// Block Size: 4096
 	// Total Files: 12345
@@ -50,7 +49,7 @@ func ExampleVFS_Open() {
 	// n, err := file.Read(data)
 	// fmt.Printf("Read %d bytes\n", n)
 
-	// Output:
+	// Example output:
 	// Read 4096 bytes
 }
 
@@ -70,7 +69,7 @@ func ExampleFile_ReadResourceFork() {
 
 	// fmt.Printf("Resource fork size: %d bytes\n", len(resourceData))
 
-	// Output:
+	// Example output:
 	// Resource fork size: 12345 bytes
 }
 
@@ -89,7 +88,7 @@ func ExampleVFS_SearchFilesByName() {
 	//     fmt.Println(path)
 	// }
 
-	// Output:
+	// Example output:
 	// installer.dmg
 	// backup.dmg
 }
@@ -114,7 +113,7 @@ func ExampleVFS_GetVolumeInfo() {
 	// fmt.Printf("  Modified: %s\n", info.ModifyDate)
 	// fmt.Printf("  Journaled: %v\n", info.IsJournaled)
 
-	// Output:
+	// Example output:
 	// Volume Information:
 	//   Signature: 0x482B
 	//   Version: 4
@@ -136,7 +135,7 @@ func ExampleParseHFSTime() {
 	goTime := hfsplus.ParseHFSTime(hfsTime)
 	fmt.Println(goTime.Year())
 
-	// Output:
+	// Example output:
 	// 2024
 }
 
@@ -172,7 +171,7 @@ func Example_forensicAnalysis() {
 	//     }
 	// }
 
-	// Output:
+	// Example output:
 	// Journal at offset: 0x1000000
 	// Journal size: 8 MB
 	// Volume is case-insensitive (HFS+)
@@ -209,7 +208,7 @@ func Example_walkFilesystem() {
 	// fmt.Printf("Total files: %d\n", fileCount)
 	// fmt.Printf("Total size: %d MB\n", totalSize/1024/1024)
 
-	// Output:
+	// Example output:
 	// Total files: 5000
 	// Total size: 25000 MB
 }
@@ -233,7 +232,7 @@ func Example_extendedAttributes() {
 	//     // - com.apple.FinderInfo (Finder metadata)
 	// }
 
-	// Output:
+	// Example output:
 	// Extended attribute: com.apple.quarantine (57 bytes)
 	// Extended attribute: com.apple.FinderInfo (32 bytes)
 }
@@ -277,7 +276,7 @@ func Example_batchExtraction() {
 	// fmt.Printf("Extracted: %d files\n", extracted)
 	// fmt.Printf("Failed: %d files\n", failed)
 
-	// Output:
+	// Example output:
 	// Extracted: 4950 files
 	// Failed: 50 files
 }

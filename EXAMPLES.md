@@ -6,6 +6,7 @@ This document provides practical examples of using DarkScan for various malware 
 
 - [Basic Scanning](#basic-scanning)
 - [Advanced Scanning](#advanced-scanning)
+- [Threat Intelligence (DarkAPI.io)](#threat-intelligence-darkapiio)
 - [Library Usage](#library-usage)
 - [Real-World Scenarios](#real-world-scenarios)
 
@@ -112,6 +113,91 @@ Errors:          0
 Scan duration:   234ms
 ======================================================================
 ```
+
+## Threat Intelligence (DarkAPI.io)
+
+These commands require the `darkapi` integration to be enabled with a valid
+`api_key` in `~/.darkscan/config.json`:
+
+```json
+{
+  "darkapi": {
+    "enabled": true,
+    "api_key": "your-darkapi-key",
+    "base_url": "https://api.darkapi.io",
+    "features": {
+      "reputation": true,
+      "packages": true,
+      "identity_exposure": true,
+      "hash_lookup": true
+    }
+  }
+}
+```
+
+All commands honor the global `--output text|json` flag and print the API's JSON
+response.
+
+### Indicator Lookups
+
+```bash
+# Look up a file hash (SHA256 or MD5)
+darkscan intel hash 44d88612fea8a8f36de82e1278abb02f
+
+# Look up a domain or IP
+darkscan intel domain malware-c2.example.com
+darkscan intel ip 203.0.113.7
+```
+
+### Threat Feeds
+
+```bash
+# List available feeds
+darkscan intel feeds
+
+# Fetch the contents of a single feed
+darkscan intel feeds bad-domains
+```
+
+### Reputation
+
+```bash
+# Single indicator (ip, domain, url, hash or email)
+darkscan intel reputation 203.0.113.7
+
+# Bulk lookup from a file (one indicator per line; paid tier)
+darkscan intel reputation --bulk indicators.txt
+```
+
+### Supply-Chain / Package Checks
+
+```bash
+# Check a single package (typosquat / known-malicious detection)
+darkscan package check npm/lodahs@1.0.0
+
+# Check every dependency in a manifest (package.json or requirements.txt)
+darkscan package check --file package.json
+darkscan package check --file requirements.txt
+```
+
+### Identity / Breach Exposure
+
+```bash
+darkscan identity exposure user@example.com
+```
+
+### Automatic Scan Enrichment
+
+With `darkapi.enabled` and `features.hash_lookup` set, `darkscan scan`
+automatically looks up the SHA-256 of any **infected** file and attaches the
+result to the output under `threat_intel` (visible in JSON output):
+
+```bash
+darkscan scan --output json /path/to/suspicious.exe
+```
+
+Enrichment is best-effort — a DarkAPI error only logs a warning and never fails
+the scan.
 
 ## Library Usage
 

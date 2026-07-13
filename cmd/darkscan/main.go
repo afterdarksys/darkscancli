@@ -17,6 +17,7 @@ import (
 	"github.com/afterdarksys/darkscan/pkg/capa"
 	"github.com/afterdarksys/darkscan/pkg/clamav"
 	"github.com/afterdarksys/darkscan/pkg/config"
+	"github.com/afterdarksys/darkscan/pkg/darkapi"
 	"github.com/afterdarksys/darkscan/pkg/document"
 	"github.com/afterdarksys/darkscan/pkg/forensics"
 	"github.com/afterdarksys/darkscan/pkg/heuristics"
@@ -148,6 +149,9 @@ func init() {
 	rootCmd.AddCommand(identifyCmd)
 	rootCmd.AddCommand(privacyCmd)
 	rootCmd.AddCommand(daemonCmd)
+	rootCmd.AddCommand(intelCmd)
+	rootCmd.AddCommand(packageCmd)
+	rootCmd.AddCommand(identityCmd)
 }
 
 func main() {
@@ -265,6 +269,21 @@ func runScan(cmd *cobra.Command, args []string) error {
 	}
 
 	s := scanner.New()
+
+	// Optional DarkAPI.io threat-intel enrichment: for infected files only,
+	// look up the SHA-256 hash and attach the result. Best-effort, never fatal.
+	if cfg.DarkAPI.Enabled && cfg.DarkAPI.Features.HashLookup {
+		if dac, derr := darkapi.NewClient(cfg.DarkAPI); derr == nil {
+			s.SetThreatIntelEnricher(func(ctx context.Context, hash string) (interface{}, error) {
+				return dac.LookupHash(ctx, hash)
+			})
+			if verbose {
+				fmt.Println("DarkAPI.io threat-intel enrichment enabled")
+			}
+		} else if verbose {
+			fmt.Fprintf(os.Stderr, "Warning: DarkAPI enrichment disabled: %v\n", derr)
+		}
+	}
 
 	// VFS Storage Provider Route Setup
 	if strings.HasPrefix(path, "s3://") {

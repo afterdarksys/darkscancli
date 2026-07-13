@@ -27,7 +27,11 @@
       "bad_ips": true,
       "domain_lookup": true,
       "ip_lookup": true,
-      "bulk_lookup": true
+      "bulk_lookup": true,
+      "reputation": true,
+      "packages": true,
+      "identity_exposure": true,
+      "hash_lookup": true
     }
   },
   "filehashes": {

@@ -46,6 +46,7 @@ type ExportScanResult struct {
 	Threats    []ExportThreat `xml:"Threats>Threat" json:"threats"`
 	ScanEngine string        `xml:"ScanEngine" json:"scan_engine" csv:"ScanEngine"`
 	Error      string        `xml:"Error,omitempty" json:"error,omitempty" csv:"Error"`
+	ThreatIntel interface{}  `xml:"-" json:"threat_intel,omitempty" csv:"-"`
 }
 
 // ExportThreat is a serialization-friendly version of Threat
@@ -96,10 +97,11 @@ func buildReport(results []*scanner.ScanResult, duration time.Duration) ScanRepo
 
 	for _, r := range results {
 		exportResult := ExportScanResult{
-			FilePath:   r.FilePath,
-			Infected:   r.Infected,
-			ScanEngine: r.ScanEngine,
-			Threats:    make([]ExportThreat, 0, len(r.Threats)),
+			FilePath:    r.FilePath,
+			Infected:    r.Infected,
+			ScanEngine:  r.ScanEngine,
+			Threats:     make([]ExportThreat, 0, len(r.Threats)),
+			ThreatIntel: r.ThreatIntel,
 		}
 
 		if r.Error != nil {

@@ -65,11 +65,15 @@ type DarkAPIConfig struct {
 }
 
 type DarkAPIFeaturesConfig struct {
-	BadDomains    bool `json:"bad_domains"`
-	BadIPs        bool `json:"bad_ips"`
-	DomainLookup  bool `json:"domain_lookup"`
-	IPLookup      bool `json:"ip_lookup"`
-	BulkLookup    bool `json:"bulk_lookup"`
+	BadDomains       bool `json:"bad_domains"`
+	BadIPs           bool `json:"bad_ips"`
+	DomainLookup     bool `json:"domain_lookup"`
+	IPLookup         bool `json:"ip_lookup"`
+	BulkLookup       bool `json:"bulk_lookup"`
+	Reputation       bool `json:"reputation"`
+	Packages         bool `json:"packages"`
+	IdentityExposure bool `json:"identity_exposure"`
+	HashLookup       bool `json:"hash_lookup"`
 }
 
 type FileHashesConfig struct {
@@ -116,11 +120,15 @@ func DefaultConfig() *Config {
 			APIKey:  "",
 			BaseURL: "https://api.darkapi.io",
 			Features: DarkAPIFeaturesConfig{
-				BadDomains:   true,
-				BadIPs:       true,
-				DomainLookup: true,
-				IPLookup:     true,
-				BulkLookup:   true,
+				BadDomains:       true,
+				BadIPs:           true,
+				DomainLookup:     true,
+				IPLookup:         true,
+				BulkLookup:       true,
+				Reputation:       true,
+				Packages:         true,
+				IdentityExposure: true,
+				HashLookup:       true,
 			},
 		},
 		FileHashes: FileHashesConfig{

@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"context"
+	"io"
 	"testing"
 )
 
@@ -16,6 +17,15 @@ func (m *mockEngine) Name() string {
 func (m *mockEngine) Scan(ctx context.Context, path string) (*ScanResult, error) {
 	return &ScanResult{
 		FilePath:   path,
+		ScanEngine: m.name,
+		Infected:   false,
+		Threats:    []Threat{},
+	}, nil
+}
+
+func (m *mockEngine) ScanReader(ctx context.Context, r io.Reader, name string) (*ScanResult, error) {
+	return &ScanResult{
+		FilePath:   name,
 		ScanEngine: m.name,
 		Infected:   false,
 		Threats:    []Threat{},

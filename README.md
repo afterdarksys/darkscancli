@@ -13,8 +13,10 @@ DarkScan is an open-source, multi-engine malware scanner written in Go. It integ
 - **Threat Intelligence Integrations**
   - **DarkAPI.io**: Access to threat intelligence feeds for malicious domains and IPs
     - Retrieve curated lists of malicious domains and IPs
-    - Individual and bulk threat indicator lookups
-    - Incremental updates for efficient threat feed synchronization
+    - Hash, domain and IP lookups plus indicator reputation (single and bulk)
+    - Software supply-chain (typosquat) package checks and identity/breach exposure
+    - Automatic threat-intel enrichment of infected scan results (hash lookup)
+    - Driven from the CLI via `darkscan intel`, `darkscan package`, and `darkscan identity`
   - **filehashes.io**: File hash reputation and tracking
     - Submit and lookup file hashes (SHA256, SHA1, MD5)
     - Track hash sightings and reputation across the community
@@ -218,6 +220,41 @@ The configuration file is located at `$HOME/.darkscan/config.json`:
   - `domain_lookup`: Enable individual domain threat lookups
   - `ip_lookup`: Enable individual IP threat lookups
   - `bulk_lookup`: Enable bulk threat lookups for multiple indicators
+  - `reputation`: Enable indicator reputation lookups (`darkscan intel reputation`)
+  - `packages`: Enable software supply-chain package checks (`darkscan package check`)
+  - `identity_exposure`: Enable breach/PII exposure lookups (`darkscan identity exposure`)
+  - `hash_lookup`: Enable hash lookups and automatic enrichment of infected scan results
+
+### Threat Intelligence Commands
+
+Once `darkapi` is enabled and an `api_key` is set in `~/.darkscan/config.json`, the
+following commands query DarkAPI.io. All honor the global `--output text|json` flag.
+
+```bash
+# Indicator lookups
+darkscan intel hash <sha256|md5>
+darkscan intel domain evil.example.com
+darkscan intel ip 203.0.113.7
+
+# Threat feeds
+darkscan intel feeds                 # list available feeds
+darkscan intel feeds bad-domains     # fetch one feed
+
+# Reputation (single or bulk from a file, one indicator per line)
+darkscan intel reputation 203.0.113.7
+darkscan intel reputation --bulk indicators.txt
+
+# Software supply-chain checks
+darkscan package check npm/lodash@4.17.21
+darkscan package check --file package.json       # or requirements.txt
+
+# Identity / breach exposure
+darkscan identity exposure user@example.com
+```
+
+When `darkapi.enabled` and `features.hash_lookup` are set, `darkscan scan` automatically
+looks up the SHA-256 of any **infected** file and attaches the result to the scan output
+under `threat_intel`. Enrichment is best-effort and never fails a scan.
 
 #### FileHashes
 - `enabled`: Enable/disable filehashes.io integration

@@ -3,6 +3,8 @@ package scanner
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
@@ -23,7 +25,15 @@ type ScanResult struct {
 	Threats     []Threat
 	ScanEngine  string
 	Error       error
+	// ThreatIntel carries optional threat-intelligence enrichment (e.g. a
+	// DarkAPI.io hash lookup) attached to infected results. It is nil when no
+	// enricher is configured or the file is clean.
+	ThreatIntel interface{} `json:"threat_intel,omitempty"`
 }
+
+// ThreatIntelFunc enriches an infected file with external threat intelligence
+// keyed by its SHA-256 hash. It must be safe for concurrent use.
+type ThreatIntelFunc func(ctx context.Context, sha256hex string) (interface{}, error)
 
 type Threat struct {
 	Name        string
@@ -68,6 +78,7 @@ type Scanner struct {
 	mu               sync.RWMutex
 	archiveManager   *archive.Manager
 	passwordCallback func(path string) (string, error)
+	threatIntel      ThreatIntelFunc
 	FS               vfs.FileSystem
 }
 
@@ -98,6 +109,7 @@ func (s *Scanner) WithVFS(fs vfs.FileSystem) *Scanner {
 		middlewares:      s.middlewares,
 		archiveManager:   s.archiveManager,
 		passwordCallback: s.passwordCallback,
+		threatIntel:      s.threatIntel,
 		FS:               fs,
 	}
 }
@@ -116,6 +128,13 @@ func (s *Scanner) RegisterMiddleware(m Middleware) {
 
 func (s *Scanner) SetPasswordCallback(cb func(path string) (string, error)) {
 	s.passwordCallback = cb
+}
+
+// SetThreatIntelEnricher installs an optional callback that enriches infected
+// results with external threat intelligence. Enrichment is best-effort: errors
+// are logged and never fail a scan.
+func (s *Scanner) SetThreatIntelEnricher(fn ThreatIntelFunc) {
+	s.threatIntel = fn
 }
 
 func (s *Scanner) acquireLocalFile(ctx context.Context, path string) (string, func(), error) {
@@ -229,6 +248,10 @@ func (s *Scanner) scanSingleTargetAndExtract(ctx context.Context, path string) (
 			}
 		}
 
+		// Threat-intelligence enrichment for infected files only. Best-effort:
+		// any error is logged and never fails the scan.
+		s.enrichInfected(ctx, path, localPath, results)
+
 		var xattrs []string
 		var xerr error
 		if s.FS != nil {
@@ -264,6 +287,60 @@ func (s *Scanner) scanSingleTargetAndExtract(ctx context.Context, path string) (
 	s.mu.RUnlock()
 
 	return results, nil
+}
+
+// enrichInfected attaches threat-intelligence data to infected results using
+// the configured enricher. It computes the file SHA-256 once and is a no-op when
+// no enricher is set or nothing is infected. Errors are logged, never returned.
+func (s *Scanner) enrichInfected(ctx context.Context, reportPath, localPath string, results []*ScanResult) {
+	if s.threatIntel == nil {
+		return
+	}
+
+	anyInfected := false
+	for _, r := range results {
+		if r != nil && r.Infected {
+			anyInfected = true
+			break
+		}
+	}
+	if !anyInfected {
+		return
+	}
+
+	hash, err := sha256File(localPath)
+	if err != nil {
+		log.Printf("threat-intel enrichment: hashing %s failed: %v", reportPath, err)
+		return
+	}
+
+	intel, err := s.threatIntel(ctx, hash)
+	if err != nil {
+		log.Printf("threat-intel enrichment for %s failed: %v", reportPath, err)
+		return
+	}
+	if intel == nil {
+		return
+	}
+	for _, r := range results {
+		if r != nil && r.Infected {
+			r.ThreatIntel = intel
+		}
+	}
+}
+
+func sha256File(path string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	h := sha256.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 func (s *Scanner) ScanDirectory(ctx context.Context, path string, recursive bool) ([]*ScanResult, error) {
