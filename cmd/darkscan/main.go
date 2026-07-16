@@ -152,6 +152,9 @@ func init() {
 	rootCmd.AddCommand(intelCmd)
 	rootCmd.AddCommand(packageCmd)
 	rootCmd.AddCommand(identityCmd)
+	rootCmd.AddCommand(osintCmd)
+	rootCmd.AddCommand(memoryCmd)
+	rootCmd.AddCommand(fuzzCmd)
 }
 
 func main() {

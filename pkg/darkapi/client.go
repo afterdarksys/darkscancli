@@ -363,3 +363,25 @@ func (c *Client) IdentityExposure(ctx context.Context, value string) (json.RawMe
 	}
 	return json.RawMessage(b), nil
 }
+
+// OsintSources performs GET /v1/osint/sources and reports which keyed external
+// data sources are currently enabled on the server (and which paid ones are
+// gated behind a higher tier).
+func (c *Client) OsintSources(ctx context.Context) (json.RawMessage, error) {
+	b, err := c.do(ctx, http.MethodGet, "/v1/osint/sources", nil)
+	if err != nil {
+		return nil, err
+	}
+	return json.RawMessage(b), nil
+}
+
+// OsintPerson performs POST /v1/osint/person for full identity enrichment.
+// On a free tier the response includes a "locked" block naming the paid
+// sources that an upgrade would unlock; the keyless sources always run.
+func (c *Client) OsintPerson(ctx context.Context, query string) (json.RawMessage, error) {
+	b, err := c.do(ctx, http.MethodPost, "/v1/osint/person", map[string]string{"query": query})
+	if err != nil {
+		return nil, err
+	}
+	return json.RawMessage(b), nil
+}
