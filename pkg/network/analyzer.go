@@ -71,7 +71,7 @@ func (a *NetworkAnalyzer) inspectPacket(packet gopacket.Packet) (NetworkFinding,
 	if ipLayer == nil {
 		ipLayer = packet.Layer(layers.LayerTypeIPv6)
 	}
-	
+
 	if ipLayer == nil {
 		return NetworkFinding{}, false
 	}

@@ -78,7 +78,7 @@ func (am *AllocationMap) GetTotalUnallocated() int64 {
 
 // UnallocatedScanner scans only unallocated regions of a filesystem
 type UnallocatedScanner struct {
-	carver *Carver
+	carver   *Carver
 	allocMap *AllocationMap
 }
 
@@ -186,11 +186,11 @@ type ScanResult struct {
 
 // SmartCarver performs intelligent carving with filesystem awareness
 type SmartCarver struct {
-	carver           *Carver
-	filesystemType   string
-	useUnallocated   bool
-	parallelScan     bool
-	workers          int
+	carver         *Carver
+	filesystemType string
+	useUnallocated bool
+	parallelScan   bool
+	workers        int
 }
 
 // NewSmartCarver creates an intelligent carver

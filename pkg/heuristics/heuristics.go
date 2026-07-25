@@ -53,8 +53,8 @@ func (e *Engine) Scan(ctx context.Context, path string) (*scanner.ScanResult, er
 	}
 
 	threat := scanner.Threat{
-		Name:        "Heuristic.Suspicious",
-		Engine:      "Heuristics",
+		Name:   "Heuristic.Suspicious",
+		Engine: "Heuristics",
 	}
 
 	for _, d := range desc {

@@ -137,7 +137,7 @@ func printIdentifyText(path string, ft *filetype.FileType) {
 
 func printIdentifyJSON(paths []string, results []*filetype.FileType) error {
 	type FileResult struct {
-		Path     string            `json:"path"`
+		Path     string             `json:"path"`
 		FileType *filetype.FileType `json:"file_type"`
 	}
 

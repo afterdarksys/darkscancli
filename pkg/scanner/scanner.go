@@ -20,11 +20,11 @@ import (
 )
 
 type ScanResult struct {
-	FilePath    string
-	Infected    bool
-	Threats     []Threat
-	ScanEngine  string
-	Error       error
+	FilePath   string
+	Infected   bool
+	Threats    []Threat
+	ScanEngine string
+	Error      error
 	// ThreatIntel carries optional threat-intelligence enrichment (e.g. a
 	// DarkAPI.io hash lookup) attached to infected results. It is nil when no
 	// enricher is configured or the file is clean.
@@ -173,7 +173,7 @@ func (s *Scanner) ScanFile(ctx context.Context, path string) ([]*ScanResult, err
 	} else {
 		info, err = os.Stat(path)
 	}
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to stat file: %w", err)
 	}
@@ -276,7 +276,7 @@ func (s *Scanner) scanSingleTargetAndExtract(ctx context.Context, path string) (
 			}
 		}
 	}
-	
+
 	// Apply PostScan middlewares
 	s.mu.RLock()
 	for _, m := range s.middlewares {

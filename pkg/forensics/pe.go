@@ -16,7 +16,7 @@ func AnalyzePE(path string, feats *FileFeatures) error {
 	}
 
 	feats.NumSections = len(f.Sections)
-	
+
 	imports, err := f.ImportedSymbols()
 	if err == nil {
 		feats.NumImports = len(imports)

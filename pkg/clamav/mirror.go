@@ -15,20 +15,20 @@ import (
 
 // MirrorClient handles downloading ClamAV definitions from a custom mirror server
 type MirrorClient struct {
-	mirrorURL      string
-	client         *http.Client
-	targetDir      string
+	mirrorURL string
+	client    *http.Client
+	targetDir string
 }
 
 // MirrorMetadata represents definition metadata from the mirror server
 type MirrorMetadata struct {
-	Version          string    `json:"version"`
-	MainVersion      string    `json:"main_version"`
-	DailyVersion     string    `json:"daily_version"`
-	BytecodeVersion  string    `json:"bytecode_version"`
-	UpdatedAt        time.Time `json:"updated_at"`
-	TotalSizeBytes   int64     `json:"total_size_bytes"`
-	TotalSizeMB      float64   `json:"total_size_mb"`
+	Version         string    `json:"version"`
+	MainVersion     string    `json:"main_version"`
+	DailyVersion    string    `json:"daily_version"`
+	BytecodeVersion string    `json:"bytecode_version"`
+	UpdatedAt       time.Time `json:"updated_at"`
+	TotalSizeBytes  int64     `json:"total_size_bytes"`
+	TotalSizeMB     float64   `json:"total_size_mb"`
 }
 
 // NewMirrorClient creates a new mirror client

@@ -75,9 +75,8 @@ func (w *nfsFileWrapper) Close() error {
 func (w *nfsFileWrapper) Stat() (os.FileInfo, error) {
 	// Stat not cleanly exported as standard os.FileInfo everywhere, map it if needed
 	// Nfs files contain getattr information.
-	return nil, fmt.Errorf("nfs Stat not implemented") 
+	return nil, fmt.Errorf("nfs Stat not implemented")
 }
-
 
 func (n *NFSFS) Stat(name string) (os.FileInfo, error) {
 	return nil, fmt.Errorf("nfs Stat not implemented")
@@ -99,7 +98,7 @@ func runWalk(target *nfsclient.Target, path string, fn filepath.WalkFunc) error 
 		if d.Name() == "." || d.Name() == ".." {
 			continue
 		}
-		
+
 		fullPath := path + "/" + d.Name()
 		if d.IsDir() {
 			if err := fn(fullPath, d, nil); err != nil {

@@ -72,13 +72,13 @@ func NewPartition(path string) (vfs.Partition, error) {
 		f.Close()
 		return nil, err
 	}
-	
-	// If it's a character or block device, Size() might return 0. 
+
+	// If it's a character or block device, Size() might return 0.
 	// To get the actual size would require an ioctl, but for simplicity we assume file size or let MFT logic handle bounds.
 	size := stat.Size()
 	if size == 0 { // Simple fallback, assume very large or query ioctl in robust implementation
-		size = 1 << 62 
+		size = 1 << 62
 	}
-	
+
 	return &LocalPartition{file: f, size: size}, nil
 }

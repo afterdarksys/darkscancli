@@ -17,26 +17,26 @@ type Store struct {
 
 // ScanRecord represents a past scan log entry
 type ScanRecord struct {
-	ID        int
-	FilePath  string
-	Infected  bool
-	Threats   string
-	ScanTime  time.Time
-	FileHash  string
+	ID       int
+	FilePath string
+	Infected bool
+	Threats  string
+	ScanTime time.Time
+	FileHash string
 }
 
 // HashCacheEntry represents a cached file hash with scan results
 type HashCacheEntry struct {
-	Hash       string
-	MD5        string
-	SHA1       string
-	SHA256     string
-	FileSize   int64
-	Infected   bool
-	Threats    string
-	FirstSeen  time.Time
-	LastSeen   time.Time
-	ScanCount  int
+	Hash      string
+	MD5       string
+	SHA1      string
+	SHA256    string
+	FileSize  int64
+	Infected  bool
+	Threats   string
+	FirstSeen time.Time
+	LastSeen  time.Time
+	ScanCount int
 }
 
 // New initializes a new sqlite database at the given path

@@ -10,8 +10,8 @@ import (
 	"io"
 	"os"
 
-	uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
 	"github.com/afterdarksys/darkscan/pkg/scanner"
+	uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
 )
 
 const (
@@ -65,7 +65,7 @@ func (s *UnicornSandbox) ScanReader(ctx context.Context, r io.Reader, name strin
 		payload = payload[:SandboxMemorySize]
 	}
 
-	// Note: We use x86 32-bit for the baseline Sandbox emulation 
+	// Note: We use x86 32-bit for the baseline Sandbox emulation
 	mu, err := uc.NewUnicorn(uc.ARCH_X86, uc.MODE_32)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize unicorn CPU: %w", err)

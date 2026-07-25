@@ -82,9 +82,9 @@ func scanBrowserCookies(browser Browser) ([]Finding, error) {
 
 	// Chrome/Edge/Brave use SQLite for cookies
 	if strings.Contains(browser.Name, "Chrome") ||
-	   strings.Contains(browser.Name, "Edge") ||
-	   strings.Contains(browser.Name, "Brave") ||
-	   strings.Contains(browser.Name, "Chromium") {
+		strings.Contains(browser.Name, "Edge") ||
+		strings.Contains(browser.Name, "Brave") ||
+		strings.Contains(browser.Name, "Chromium") {
 		return scanChromiumCookies(browser)
 	}
 

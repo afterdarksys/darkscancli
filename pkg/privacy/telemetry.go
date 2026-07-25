@@ -32,12 +32,12 @@ func scanWindowsTelemetryServices() []Finding {
 
 	// Known Windows telemetry services
 	telemetryServices := map[string]string{
-		"DiagTrack":                         "Connected User Experiences and Telemetry",
-		"dmwappushservice":                  "Device Management Wireless Application Protocol",
-		"RetailDemo":                        "Retail Demo Service",
-		"Fax":                               "Fax Service (rarely used, potential tracking)",
-		"WerSvc":                            "Windows Error Reporting Service",
-		"WSearch":                           "Windows Search (can track searches)",
+		"DiagTrack":        "Connected User Experiences and Telemetry",
+		"dmwappushservice": "Device Management Wireless Application Protocol",
+		"RetailDemo":       "Retail Demo Service",
+		"Fax":              "Fax Service (rarely used, potential tracking)",
+		"WerSvc":           "Windows Error Reporting Service",
+		"WSearch":          "Windows Search (can track searches)",
 	}
 
 	for service, desc := range telemetryServices {
@@ -103,8 +103,8 @@ func scanRegistryTracking() []Finding {
 	// Known registry tracking locations
 	trackingKeys := map[string]string{
 		"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection": "Telemetry Settings",
-		"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection":                  "Data Collection Policy",
-		"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo":           "Advertising ID",
+		"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection":                 "Data Collection Policy",
+		"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo":          "Advertising ID",
 	}
 
 	for key, desc := range trackingKeys {

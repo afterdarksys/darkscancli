@@ -10,14 +10,14 @@ import (
 
 // FileType represents an identified file type
 type FileType struct {
-	Extension   string   // Primary extension (e.g., "exe", "pdf")
-	MIMEType    string   // MIME type (e.g., "application/pdf")
-	Description string   // Human-readable description
-	Category    string   // Category: executable, document, image, archive, etc.
-	Confidence  int      // Confidence level (0-100)
-	IsSpoofed   bool     // True if extension doesn't match actual type
-	ActualType  string   // Actual detected type if spoofed
-	DeclaredExt string   // File extension from filename
+	Extension   string // Primary extension (e.g., "exe", "pdf")
+	MIMEType    string // MIME type (e.g., "application/pdf")
+	Description string // Human-readable description
+	Category    string // Category: executable, document, image, archive, etc.
+	Confidence  int    // Confidence level (0-100)
+	IsSpoofed   bool   // True if extension doesn't match actual type
+	ActualType  string // Actual detected type if spoofed
+	DeclaredExt string // File extension from filename
 }
 
 // MagicSignature represents a file type signature

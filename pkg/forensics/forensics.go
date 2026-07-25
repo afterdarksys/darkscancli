@@ -35,13 +35,13 @@ type FileFeatures struct {
 	ImpHash     string
 
 	// Behaviors
-	StringsCount        int
-	HasNetworkCalls     bool
-	HasInjection        bool
-	HasEvasion          bool
-	HasPersistence      bool
-	HasCrypto           bool
-	HasExecutableStack  bool
+	StringsCount       int
+	HasNetworkCalls    bool
+	HasInjection       bool
+	HasEvasion         bool
+	HasPersistence     bool
+	HasCrypto          bool
+	HasExecutableStack bool
 }
 
 type Analyzer struct {

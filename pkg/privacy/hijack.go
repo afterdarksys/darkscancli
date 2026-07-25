@@ -31,8 +31,8 @@ type ChromiumPreferences struct {
 		RestoreOnStartup int      `json:"restore_on_startup"`
 		StartupURLs      []string `json:"startup_urls"`
 	} `json:"session"`
-	Homepage        string `json:"homepage"`
-	HomepageIsNTP   bool   `json:"homepage_is_newtabpage"`
+	Homepage              string `json:"homepage"`
+	HomepageIsNTP         bool   `json:"homepage_is_newtabpage"`
 	DefaultSearchProvider struct {
 		SearchURL string `json:"search_url"`
 		Name      string `json:"name"`
@@ -71,9 +71,9 @@ func scanBrowserHijacks(browser Browser) ([]Finding, error) {
 
 	// Chromium-based browsers use JSON preferences
 	if strings.Contains(browser.Name, "Chrome") ||
-	   strings.Contains(browser.Name, "Edge") ||
-	   strings.Contains(browser.Name, "Brave") ||
-	   strings.Contains(browser.Name, "Chromium") {
+		strings.Contains(browser.Name, "Edge") ||
+		strings.Contains(browser.Name, "Brave") ||
+		strings.Contains(browser.Name, "Chromium") {
 		return scanChromiumHijacks(browser)
 	}
 

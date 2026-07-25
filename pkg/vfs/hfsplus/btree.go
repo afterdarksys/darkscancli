@@ -7,11 +7,11 @@ import (
 
 // BTree represents an HFS+ B-tree
 type BTree struct {
-	hfs        *HFSPlus
-	fork       *ForkData
-	header     *BTHeaderRecord
-	nodeSize   uint32
-	nodeCache  map[uint32]*BTNode
+	hfs       *HFSPlus
+	fork      *ForkData
+	header    *BTHeaderRecord
+	nodeSize  uint32
+	nodeCache map[uint32]*BTNode
 }
 
 // BTNode represents a node in the B-tree
@@ -22,8 +22,8 @@ type BTNode struct {
 
 // BTRecord represents a record in a B-tree node
 type BTRecord struct {
-	Key   []byte
-	Data  []byte
+	Key  []byte
+	Data []byte
 }
 
 // NewBTree creates a new B-tree parser

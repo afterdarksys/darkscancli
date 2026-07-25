@@ -10,10 +10,10 @@ import (
 
 // Pattern represents an extracted binary pattern
 type Pattern struct {
-	Offset      int64  `json:"offset"`
-	HexPattern  string `json:"hex_pattern"`
-	WildcardHex string `json:"wildcard_hex,omitempty"`
-	Length      int    `json:"length"`
+	Offset      int64   `json:"offset"`
+	HexPattern  string  `json:"hex_pattern"`
+	WildcardHex string  `json:"wildcard_hex,omitempty"`
+	Length      int     `json:"length"`
 	Entropy     float64 `json:"entropy,omitempty"`
 }
 

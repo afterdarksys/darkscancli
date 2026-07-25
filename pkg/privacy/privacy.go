@@ -28,14 +28,14 @@ type Finding struct {
 type FindingType string
 
 const (
-	FindingTypeCookie          FindingType = "tracking_cookie"
-	FindingTypeExtension       FindingType = "suspicious_extension"
-	FindingTypeHijack          FindingType = "browser_hijack"
-	FindingTypeTelemetry       FindingType = "windows_telemetry"
-	FindingTypeDNSTracker      FindingType = "dns_tracker"
-	FindingTypeRegistry        FindingType = "registry_tracker"
-	FindingTypeStorageTracker  FindingType = "storage_tracker"
-	FindingTypeHistoryTracker  FindingType = "history_tracker"
+	FindingTypeCookie         FindingType = "tracking_cookie"
+	FindingTypeExtension      FindingType = "suspicious_extension"
+	FindingTypeHijack         FindingType = "browser_hijack"
+	FindingTypeTelemetry      FindingType = "windows_telemetry"
+	FindingTypeDNSTracker     FindingType = "dns_tracker"
+	FindingTypeRegistry       FindingType = "registry_tracker"
+	FindingTypeStorageTracker FindingType = "storage_tracker"
+	FindingTypeHistoryTracker FindingType = "history_tracker"
 )
 
 // Severity levels
@@ -62,15 +62,15 @@ type Browser struct {
 
 // ScanResult contains all privacy scan findings
 type ScanResult struct {
-	Findings       []Finding
-	TotalFindings  int
-	CriticalCount  int
-	HighCount      int
-	MediumCount    int
-	LowCount       int
-	InfoCount      int
+	Findings        []Finding
+	TotalFindings   int
+	CriticalCount   int
+	HighCount       int
+	MediumCount     int
+	LowCount        int
+	InfoCount       int
 	BrowsersScanned int
-	ScanDuration   time.Duration
+	ScanDuration    time.Duration
 }
 
 // NewScanner creates a new privacy scanner

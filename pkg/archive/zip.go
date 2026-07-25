@@ -45,7 +45,7 @@ func (z *ZipExtractor) Extract(ctx context.Context, path string, opts ExtractOpt
 
 		// Zip slip protection
 		if strings.Contains(f.Name, "..") {
-			continue 
+			continue
 		}
 
 		var rc io.ReadCloser

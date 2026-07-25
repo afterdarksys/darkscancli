@@ -2,18 +2,18 @@ package carving
 
 // FileSignature defines a file type signature for carving
 type FileSignature struct {
-	Name        string   // File type name (e.g., "JPEG", "PDF")
-	Extension   string   // File extension
-	MIMEType    string   // MIME type
-	Header      []byte   // File header signature
-	Footer      []byte   // File footer signature (optional)
-	HeaderMask  []byte   // Mask for flexible header matching
-	FooterMask  []byte   // Mask for flexible footer matching
-	MinSize     int64    // Minimum valid file size
-	MaxSize     int64    // Maximum file size to extract
-	Category    string   // Category: image, document, video, etc.
-	HasFooter   bool     // Whether file has a defined footer
-	Validator   func([]byte) bool // Optional validation function
+	Name       string            // File type name (e.g., "JPEG", "PDF")
+	Extension  string            // File extension
+	MIMEType   string            // MIME type
+	Header     []byte            // File header signature
+	Footer     []byte            // File footer signature (optional)
+	HeaderMask []byte            // Mask for flexible header matching
+	FooterMask []byte            // Mask for flexible footer matching
+	MinSize    int64             // Minimum valid file size
+	MaxSize    int64             // Maximum file size to extract
+	Category   string            // Category: image, document, video, etc.
+	HasFooter  bool              // Whether file has a defined footer
+	Validator  func([]byte) bool // Optional validation function
 }
 
 // Common file signatures for carving

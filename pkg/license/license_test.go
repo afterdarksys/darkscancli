@@ -8,7 +8,7 @@ import (
 
 func TestLicenseEnforcement(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	validPath := filepath.Join(tmpDir, "valid_license.json")
 	os.WriteFile(validPath, []byte(`{
 		"id": "LIC-12345",

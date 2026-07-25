@@ -36,13 +36,13 @@ type FileSystem interface {
 
 // ForensicNode represents basic forensic information extracted from raw MFT/Inode structures.
 type ForensicNode struct {
-	Name         string
-	Path         string
-	Size         int64
-	IsDeleted    bool
-	ReferenceID  uint64           // NTFS MFT Reference or Unix Inode
-	Timestamps   map[string]int64 // Creation, modification, access times (Unix epoch)
-	RawStruct    []byte           // The raw bytes of the MFT record or Inode
+	Name        string
+	Path        string
+	Size        int64
+	IsDeleted   bool
+	ReferenceID uint64           // NTFS MFT Reference or Unix Inode
+	Timestamps  map[string]int64 // Creation, modification, access times (Unix epoch)
+	RawStruct   []byte           // The raw bytes of the MFT record or Inode
 }
 
 // ForensicFileSystem extends FileSystem with deep block-level recovery capabilities.
@@ -59,7 +59,7 @@ type ForensicFileSystem interface {
 	// ReadDeleted opens a deleted file by its inode or reference ID for reading (if content is recoverable).
 	ReadDeleted(referenceID uint64) (File, error)
 
-	// ParseJournal processes the OS filesystem journal (e.g., USN on Windows, ext4 journal) 
+	// ParseJournal processes the OS filesystem journal (e.g., USN on Windows, ext4 journal)
 	// for historical actions that happened after the specified `since` timestamp.
 	ParseJournal(sinceEpoch int64, fn func(entry string) error) error
 }
@@ -96,4 +96,3 @@ type ForensicRepair interface {
 	// Requires License Feature: BOOT_REPAIR
 	RepairBootSector(knownGoodHash string) error
 }
-

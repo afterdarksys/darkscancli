@@ -14,11 +14,11 @@ import (
 
 // Hashes contains all computed hashes for a file
 type Hashes struct {
-	MD5     string `json:"md5"`
-	SHA1    string `json:"sha1"`
-	SHA256  string `json:"sha256"`
-	SSDEEP  string `json:"ssdeep,omitempty"`
-	Size    int64  `json:"size"`
+	MD5    string `json:"md5"`
+	SHA1   string `json:"sha1"`
+	SHA256 string `json:"sha256"`
+	SSDEEP string `json:"ssdeep,omitempty"`
+	Size   int64  `json:"size"`
 }
 
 // ComputeAll computes all hashes for a file

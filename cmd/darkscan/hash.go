@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	hashFormat   string
-	hashInfected bool
-	hashClean    bool
+	hashFormat     string
+	hashInfected   bool
+	hashClean      bool
 	hashOutputFile string
-	hashRetention int
+	hashRetention  int
 )
 
 var hashCmd = &cobra.Command{

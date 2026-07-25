@@ -12,11 +12,11 @@ import (
 
 // DFXMLReport represents a Digital Forensics XML report
 type DFXMLReport struct {
-	XMLName xml.Name `xml:"dfxml"`
-	Version string   `xml:"version,attr"`
-	Creator *Creator `xml:"creator"`
-	Source  *Source  `xml:"source"`
-	RunInfo *RunInfo `xml:"runinfo"`
+	XMLName xml.Name     `xml:"dfxml"`
+	Version string       `xml:"version,attr"`
+	Creator *Creator     `xml:"creator"`
+	Source  *Source      `xml:"source"`
+	RunInfo *RunInfo     `xml:"runinfo"`
 	Files   []FileObject `xml:"fileobject"`
 }
 
@@ -28,10 +28,10 @@ type Creator struct {
 
 // Source describes the source being analyzed
 type Source struct {
-	ImageFilename string `xml:"image_filename,omitempty"`
-	DeviceName    string `xml:"device_name,omitempty"`
-	PartitionOffset int64 `xml:"partition_offset,omitempty"`
-	VolumeSize    int64  `xml:"volume_size,omitempty"`
+	ImageFilename   string `xml:"image_filename,omitempty"`
+	DeviceName      string `xml:"device_name,omitempty"`
+	PartitionOffset int64  `xml:"partition_offset,omitempty"`
+	VolumeSize      int64  `xml:"volume_size,omitempty"`
 }
 
 // RunInfo contains information about the scan run
@@ -71,11 +71,11 @@ type HashDigest struct {
 
 // CarvingInfo contains carving-specific metadata
 type CarvingInfo struct {
-	Confidence     int      `xml:"confidence"`
-	IsComplete     bool     `xml:"is_complete"`
-	IsFragmented   bool     `xml:"is_fragmented"`
-	HeaderOffset   int64    `xml:"header_offset"`
-	FooterOffset   int64    `xml:"footer_offset,omitempty"`
+	Confidence       int      `xml:"confidence"`
+	IsComplete       bool     `xml:"is_complete"`
+	IsFragmented     bool     `xml:"is_fragmented"`
+	HeaderOffset     int64    `xml:"header_offset"`
+	FooterOffset     int64    `xml:"footer_offset,omitempty"`
 	ValidationErrors []string `xml:"validation_errors>error,omitempty"`
 }
 
@@ -99,10 +99,10 @@ func NewDFXMLReport() *DFXMLReport {
 // AddCarvedFile adds a carved file to the report
 func (r *DFXMLReport) AddCarvedFile(file *CarvedFile, outputFilename string) {
 	fileObj := FileObject{
-		Filename:  outputFilename,
-		FileSize:  file.Size,
-		FileType:  file.Type,
-		MIMEType:  file.MIMEType,
+		Filename: outputFilename,
+		FileSize: file.Size,
+		FileType: file.Type,
+		MIMEType: file.MIMEType,
 		ByteRuns: []ByteRun{
 			{
 				ImageOffset: file.Offset,
@@ -191,13 +191,13 @@ func (r *DFXMLReport) String() (string, error) {
 
 // Statistics generates statistics from the report
 type Statistics struct {
-	TotalFiles       int
-	TotalBytes       int64
-	FilesByType      map[string]int
-	FilesByCategory  map[string]int
+	TotalFiles        int
+	TotalBytes        int64
+	FilesByType       map[string]int
+	FilesByCategory   map[string]int
 	AverageConfidence float64
-	CompleteFiles    int
-	FragmentedFiles  int
+	CompleteFiles     int
+	FragmentedFiles   int
 }
 
 // GetStatistics calculates statistics from the report

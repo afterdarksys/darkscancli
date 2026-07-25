@@ -235,7 +235,7 @@ func (n *NTFS) RestoreFromVSS(referenceID uint64, snapshotID string) error {
 	if !license.HasFeature(license.FeatureVSSRecovery) && !license.HasFeature(license.FeatureAll) {
 		return fmt.Errorf("feature not licensed: %s", license.FeatureVSSRecovery)
 	}
-	
+
 	// MVP Implementation: Scans the first 100MB for a VSS snapshot store header
 	buf := make([]byte, 4096)
 	found := false
@@ -376,7 +376,7 @@ func (n *NTFS) RollbackJournal(sinceEpoch int64) error {
 	if !license.HasFeature(license.FeatureJournalRollback) && !license.HasFeature(license.FeatureAll) {
 		return fmt.Errorf("feature not licensed: %s", license.FeatureJournalRollback)
 	}
-	
+
 	fmt.Printf("[NTFS] Parsed $UsnJrnl. Rolling back transactions since epoch %d (Feature Unlocked)\n", sinceEpoch)
 	return nil
 }
@@ -401,7 +401,7 @@ func (n *NTFS) RepairBootSector(knownGoodHash string) error {
 	if _, err := n.source.WriteAt(buf, 0); err != nil {
 		return fmt.Errorf("failed to write repaired boot sector: %w", err)
 	}
-	
+
 	fmt.Printf("[NTFS] Successfully repaired boot sector. Neutralized bootkit code (Feature Unlocked)\n")
 	return nil
 }

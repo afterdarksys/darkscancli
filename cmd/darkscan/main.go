@@ -23,8 +23,8 @@ import (
 	"github.com/afterdarksys/darkscan/pkg/heuristics"
 	"github.com/afterdarksys/darkscan/pkg/license"
 	"github.com/afterdarksys/darkscan/pkg/quarantine"
-	"github.com/afterdarksys/darkscan/pkg/scanner"
 	"github.com/afterdarksys/darkscan/pkg/sandbox"
+	"github.com/afterdarksys/darkscan/pkg/scanner"
 	"github.com/afterdarksys/darkscan/pkg/store"
 	"github.com/afterdarksys/darkscan/pkg/vfs/local"
 	"github.com/afterdarksys/darkscan/pkg/vfs/nfs"
@@ -36,24 +36,24 @@ import (
 )
 
 var (
-	configPath        string
-	licensePath       string
-	outputFormat      string
-	outputFile        string
-	scanProfile       string
-	verbose           bool
-	recursive         bool
-	enableClamAV      bool
-	enableYARA        bool
-	enableCAPA        bool
-	enableViper       bool
-	enableDocument    bool
-	enableHeuristics  bool
-	enableSandbox     bool
-	autoQuarantine    bool
-	yaraRulesPath     string
-	capaRulesPath     string
-	progressMode      bool
+	configPath       string
+	licensePath      string
+	outputFormat     string
+	outputFile       string
+	scanProfile      string
+	verbose          bool
+	recursive        bool
+	enableClamAV     bool
+	enableYARA       bool
+	enableCAPA       bool
+	enableViper      bool
+	enableDocument   bool
+	enableHeuristics bool
+	enableSandbox    bool
+	autoQuarantine   bool
+	yaraRulesPath    string
+	capaRulesPath    string
+	progressMode     bool
 )
 
 var rootCmd = &cobra.Command{
@@ -251,16 +251,16 @@ func runScan(cmd *cobra.Command, args []string) error {
 		if verbose {
 			fmt.Println("Connected to DarkScan daemon, routing scan request...")
 		}
-		
+
 		scanStart := time.Now()
-		
+
 		// If it's a remote URL like S3, might want to stream it, but for MVP we send Path
 		// A fully robust implementation would parse s3:// and stream the bytes, or rely on daemon to mount it
 		results, err := dsClient.ScanLocal(path, recursive)
 		if err != nil {
 			return fmt.Errorf("scan failed via daemon: %w", err)
 		}
-		
+
 		printResults(results, time.Since(scanStart))
 		return nil
 	} else if !cfg.Daemon.AutoFallback {

@@ -19,7 +19,7 @@ import (
 // and are referenced by the extraction/scanning routines below.
 const (
 	memChunkSize   = 4 << 20 // 4 MiB streaming window
-	memOverlapSize = 512      // carry-over bytes so boundary-straddling secrets still match
+	memOverlapSize = 512     // carry-over bytes so boundary-straddling secrets still match
 )
 
 var (
@@ -103,12 +103,12 @@ type extractedString struct {
 
 // memoryFinding is a single (possibly deduplicated) secret detection.
 type memoryFinding struct {
-	Type    string  `json:"type"`             // detector name
-	Offset  int64   `json:"offset"`           // byte offset of the first occurrence
-	Preview string  `json:"preview"`          // REDACTED preview, never the full secret
-	Entropy float64 `json:"entropy"`          // Shannon entropy of the matched value
-	Context string  `json:"context"`          // sanitized surrounding snippet
-	Count   int     `json:"count"`            // number of identical (type,value) hits
+	Type    string  `json:"type"`    // detector name
+	Offset  int64   `json:"offset"`  // byte offset of the first occurrence
+	Preview string  `json:"preview"` // REDACTED preview, never the full secret
+	Entropy float64 `json:"entropy"` // Shannon entropy of the matched value
+	Context string  `json:"context"` // sanitized surrounding snippet
+	Count   int     `json:"count"`   // number of identical (type,value) hits
 	value   string  // full value, kept internal for dedup only; not serialized
 }
 

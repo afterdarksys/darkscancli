@@ -37,7 +37,7 @@ func (e *DocumentEngine) Scan(ctx context.Context, path string) (*scanner.ScanRe
 
 	lowerPath := strings.ToLower(path)
 
-	// Quick extension check or magic byte fallback could be used. 
+	// Quick extension check or magic byte fallback could be used.
 	// For simplicity and performance, checking extensions:
 	if strings.HasSuffix(lowerPath, ".pdf") {
 		return e.scanPDF(path, result)
@@ -55,11 +55,11 @@ func (e *DocumentEngine) Scan(ctx context.Context, path string) (*scanner.ScanRe
 		magic := make([]byte, 8)
 		f.Read(magic)
 		f.Close()
-		
+
 		if string(magic[:4]) == "%PDF" {
 			return e.scanPDF(path, result)
 		}
-		
+
 		if magic[0] == 0xD0 && magic[1] == 0xCF && magic[2] == 0x11 && magic[3] == 0xE0 && magic[4] == 0xA1 && magic[5] == 0xB1 && magic[6] == 0x1A && magic[7] == 0xE1 {
 			return e.scanOfficeOLE(path, result)
 		}
@@ -119,14 +119,14 @@ func (e *DocumentEngine) scanOfficeOOXML(path string, res *scanner.ScanResult) (
 	for _, f := range r.File {
 		if strings.HasSuffix(strings.ToLower(f.Name), "vbaproject.bin") {
 			hasMacros = true
-			
+
 			rc, err := f.Open()
 			if err == nil {
 				buf := make([]byte, 1024*1024)
 				n, _ := rc.Read(buf)
 				rc.Close()
 				s := string(buf[:n])
-				
+
 				if strings.Contains(s, "AutoOpen") || strings.Contains(s, "Document_Open") || strings.Contains(s, "Workbook_Open") {
 					res.Infected = true
 					res.Threats = append(res.Threats, scanner.Threat{

@@ -19,12 +19,12 @@ type Fragment struct {
 
 // FragmentedFile represents a file reconstructed from fragments
 type FragmentedFile struct {
-	Fragments    []*Fragment
-	TotalSize    int64
-	Type         string
-	Extension    string
-	IsComplete   bool
-	Confidence   int
+	Fragments     []*Fragment
+	TotalSize     int64
+	Type          string
+	Extension     string
+	IsComplete    bool
+	Confidence    int
 	MissingRanges []Range // Byte ranges that are missing
 }
 

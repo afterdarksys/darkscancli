@@ -10,8 +10,8 @@ import (
 
 // ProgressEvent represents a progress update event
 type ProgressEvent struct {
-	Type      string                `json:"type"`      // scan_start, file_scanning, file_scanned, threat_detected, scan_complete
-	Timestamp time.Time             `json:"timestamp"`
+	Type      string                 `json:"type"` // scan_start, file_scanning, file_scanned, threat_detected, scan_complete
+	Timestamp time.Time              `json:"timestamp"`
 	Data      map[string]interface{} `json:"data,omitempty"`
 }
 

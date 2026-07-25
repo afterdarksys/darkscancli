@@ -26,10 +26,10 @@ type Rule struct {
 
 // ATTMapping represents ATT&CK framework mapping
 type ATTMapping struct {
-	Tactic    string   `json:"tactic"`
-	Technique string   `json:"technique"`
+	Tactic       string `json:"tactic"`
+	Technique    string `json:"technique"`
 	Subtechnique string `json:"subtechnique,omitempty"`
-	ID        string   `json:"id"`
+	ID           string `json:"id"`
 }
 
 // Feature represents a capability feature
@@ -106,10 +106,10 @@ func (g *Generator) mapATTACK(analysis *analyzer.Analysis, rule *Rule) {
 
 		case "keylogging":
 			rule.ATT = &ATTMapping{
-				Tactic:    "Collection",
-				Technique: "Input Capture",
+				Tactic:       "Collection",
+				Technique:    "Input Capture",
 				Subtechnique: "Keylogging",
-				ID:        "T1056.001",
+				ID:           "T1056.001",
 			}
 			rule.MBC = append(rule.MBC, "Collection::Input Capture::Keylogging [E1056.001]")
 
@@ -170,20 +170,20 @@ func (g *Generator) generateFeatures(analysis *analyzer.Analysis, rule *Rule) {
 // addAPIFeatures adds API call features
 func (g *Generator) addAPIFeatures(analysis *analyzer.Analysis, rule *Rule) {
 	suspiciousAPIs := map[string]string{
-		"VirtualAlloc":        "allocate memory",
-		"VirtualProtect":      "change memory permissions",
-		"WriteProcessMemory":  "write to remote process",
-		"CreateRemoteThread":  "create remote thread",
-		"SetWindowsHookEx":    "install hook",
-		"GetAsyncKeyState":    "capture keystrokes",
-		"URLDownloadToFile":   "download file",
-		"WinExec":             "execute command",
-		"ShellExecute":        "execute command",
-		"RegSetValue":         "modify registry",
-		"CryptEncrypt":        "encrypt data",
-		"CryptDecrypt":        "decrypt data",
-		"InternetOpen":        "network communication",
-		"InternetConnect":     "network communication",
+		"VirtualAlloc":       "allocate memory",
+		"VirtualProtect":     "change memory permissions",
+		"WriteProcessMemory": "write to remote process",
+		"CreateRemoteThread": "create remote thread",
+		"SetWindowsHookEx":   "install hook",
+		"GetAsyncKeyState":   "capture keystrokes",
+		"URLDownloadToFile":  "download file",
+		"WinExec":            "execute command",
+		"ShellExecute":       "execute command",
+		"RegSetValue":        "modify registry",
+		"CryptEncrypt":       "encrypt data",
+		"CryptDecrypt":       "decrypt data",
+		"InternetOpen":       "network communication",
+		"InternetConnect":    "network communication",
 	}
 
 	for _, imp := range analysis.PEInfo.Imports {

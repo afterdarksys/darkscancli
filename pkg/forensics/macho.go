@@ -16,7 +16,7 @@ func AnalyzeMachO(path string, feats *FileFeatures) error {
 		if feats.Type == "" {
 			feats.Type = "Mach-O (Fat)"
 		}
-		
+
 		// Just take first arch
 		f = fat.Arches[0].File
 	} else {
@@ -27,13 +27,13 @@ func AnalyzeMachO(path string, feats *FileFeatures) error {
 	}
 
 	feats.NumSections = len(f.Sections)
-	
+
 	imports, err := f.ImportedSymbols()
 	if err == nil {
 		feats.NumImports = len(imports)
 	}
 
 	// Simplified: didn't parse exports
-	
+
 	return nil
 }

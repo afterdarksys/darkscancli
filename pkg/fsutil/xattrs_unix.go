@@ -12,7 +12,7 @@ func ListXattrs(path string) ([]string, error) {
 	if err != nil || sz <= 0 {
 		return nil, err
 	}
-	
+
 	buf := make([]byte, sz)
 	sz, err = unix.Listxattr(path, buf)
 	if err != nil {
@@ -36,7 +36,7 @@ func GetXattr(path, name string) ([]byte, error) {
 	if err != nil || sz <= 0 {
 		return nil, err
 	}
-	
+
 	buf := make([]byte, sz)
 	sz, err = unix.Getxattr(path, name, buf)
 	if err != nil {

@@ -13,20 +13,20 @@ import (
 
 // CarvedFile represents a file carved from disk
 type CarvedFile struct {
-	Offset      int64         // Offset where file was found
-	Size        int64         // Size of carved file
-	Type        string        // File type name
-	Extension   string        // File extension
-	MIMEType    string        // MIME type
-	Category    string        // File category
-	Signature   FileSignature // Matched signature
-	Data        []byte        // File data
-	IsComplete  bool          // Whether file has valid footer
-	IsFragmented bool         // Whether file appears fragmented
-	Confidence  int           // Confidence score (0-100)
-	ValidationErrors []string  // Validation issues found
-	MD5    string
-	SHA256 string
+	Offset           int64         // Offset where file was found
+	Size             int64         // Size of carved file
+	Type             string        // File type name
+	Extension        string        // File extension
+	MIMEType         string        // MIME type
+	Category         string        // File category
+	Signature        FileSignature // Matched signature
+	Data             []byte        // File data
+	IsComplete       bool          // Whether file has valid footer
+	IsFragmented     bool          // Whether file appears fragmented
+	Confidence       int           // Confidence score (0-100)
+	ValidationErrors []string      // Validation issues found
+	MD5              string
+	SHA256           string
 }
 
 // ProgressFunc is called periodically during carving with current progress.
@@ -45,10 +45,10 @@ type Carver struct {
 
 // Options for carver configuration
 type Options struct {
-	BlockSize     int64 // Block size for reading (default: 4096)
-	MaxFileSize   int64 // Maximum file size to carve (default: 100MB)
-	MinConfidence int   // Minimum confidence to report (default: 50)
-	ValidateFiles bool  // Whether to validate carved files (default: true)
+	BlockSize     int64           // Block size for reading (default: 4096)
+	MaxFileSize   int64           // Maximum file size to carve (default: 100MB)
+	MinConfidence int             // Minimum confidence to report (default: 50)
+	ValidateFiles bool            // Whether to validate carved files (default: true)
 	Signatures    []FileSignature // Custom signatures (default: all)
 	Progress      ProgressFunc
 }

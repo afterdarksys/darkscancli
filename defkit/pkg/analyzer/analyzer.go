@@ -12,14 +12,14 @@ import (
 
 // Analysis contains comprehensive analysis results
 type Analysis struct {
-	Sample      *sample.Sample    `json:"sample"`
-	Hashes      *hash.Hashes      `json:"hashes"`
-	Strings     []pattern.String  `json:"strings"`
-	Patterns    []pattern.Pattern `json:"patterns"`
-	PEInfo      *sample.PEInfo    `json:"pe_info,omitempty"`
-	ELFInfo     *sample.ELFInfo   `json:"elf_info,omitempty"`
-	MachOInfo   *sample.MachOInfo `json:"macho_info,omitempty"`
-	Metadata    Metadata          `json:"metadata"`
+	Sample    *sample.Sample    `json:"sample"`
+	Hashes    *hash.Hashes      `json:"hashes"`
+	Strings   []pattern.String  `json:"strings"`
+	Patterns  []pattern.Pattern `json:"patterns"`
+	PEInfo    *sample.PEInfo    `json:"pe_info,omitempty"`
+	ELFInfo   *sample.ELFInfo   `json:"elf_info,omitempty"`
+	MachOInfo *sample.MachOInfo `json:"macho_info,omitempty"`
+	Metadata  Metadata          `json:"metadata"`
 }
 
 // Metadata contains analysis metadata
@@ -34,10 +34,10 @@ type Metadata struct {
 
 // Options configures the analysis
 type Options struct {
-	ExtractStrings  bool `json:"extract_strings"`
-	ExtractPatterns bool `json:"extract_patterns"`
-	DeepAnalysis    bool `json:"deep_analysis"`
-	MinStringLength int  `json:"min_string_length"`
+	ExtractStrings   bool `json:"extract_strings"`
+	ExtractPatterns  bool `json:"extract_patterns"`
+	DeepAnalysis     bool `json:"deep_analysis"`
+	MinStringLength  int  `json:"min_string_length"`
 	MinPatternLength int  `json:"min_pattern_length"`
 	MaxPatternLength int  `json:"max_pattern_length"`
 }
@@ -45,10 +45,10 @@ type Options struct {
 // DefaultOptions returns default analysis options
 func DefaultOptions() Options {
 	return Options{
-		ExtractStrings:  true,
-		ExtractPatterns: true,
-		DeepAnalysis:    true,
-		MinStringLength: 4,
+		ExtractStrings:   true,
+		ExtractPatterns:  true,
+		DeepAnalysis:     true,
+		MinStringLength:  4,
 		MinPatternLength: 8,
 		MaxPatternLength: 64,
 	}
@@ -136,17 +136,17 @@ func (a *Analyzer) analyzePEBehavior(analysis *Analysis) {
 
 	// Check for suspicious imports
 	suspiciousAPIs := map[string]string{
-		"VirtualAlloc":        "memory-manipulation",
-		"VirtualProtect":      "memory-manipulation",
-		"WriteProcessMemory":  "process-injection",
-		"CreateRemoteThread":  "process-injection",
-		"SetWindowsHookEx":    "hooking",
-		"GetAsyncKeyState":    "keylogging",
-		"URLDownloadToFile":   "downloader",
-		"WinExec":             "execution",
-		"ShellExecute":        "execution",
-		"RegSetValue":         "persistence",
-		"CryptEncrypt":        "encryption",
+		"VirtualAlloc":       "memory-manipulation",
+		"VirtualProtect":     "memory-manipulation",
+		"WriteProcessMemory": "process-injection",
+		"CreateRemoteThread": "process-injection",
+		"SetWindowsHookEx":   "hooking",
+		"GetAsyncKeyState":   "keylogging",
+		"URLDownloadToFile":  "downloader",
+		"WinExec":            "execution",
+		"ShellExecute":       "execution",
+		"RegSetValue":        "persistence",
+		"CryptEncrypt":       "encryption",
 	}
 
 	for _, imp := range analysis.PEInfo.Imports {

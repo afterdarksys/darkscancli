@@ -32,21 +32,21 @@ type ScanReport struct {
 
 // ScanSummary provides aggregate statistics
 type ScanSummary struct {
-	TotalFiles    int     `xml:"TotalFiles" json:"total_files"`
-	InfectedFiles int     `xml:"InfectedFiles" json:"infected_files"`
-	CleanFiles    int     `xml:"CleanFiles" json:"clean_files"`
-	Errors        int     `xml:"Errors" json:"errors"`
-	ScanDuration  string  `xml:"ScanDuration" json:"scan_duration"`
+	TotalFiles    int    `xml:"TotalFiles" json:"total_files"`
+	InfectedFiles int    `xml:"InfectedFiles" json:"infected_files"`
+	CleanFiles    int    `xml:"CleanFiles" json:"clean_files"`
+	Errors        int    `xml:"Errors" json:"errors"`
+	ScanDuration  string `xml:"ScanDuration" json:"scan_duration"`
 }
 
 // ExportScanResult is a serialization-friendly version of ScanResult
 type ExportScanResult struct {
-	FilePath   string        `xml:"FilePath" json:"file_path" csv:"FilePath"`
-	Infected   bool          `xml:"Infected" json:"infected" csv:"Infected"`
-	Threats    []ExportThreat `xml:"Threats>Threat" json:"threats"`
-	ScanEngine string        `xml:"ScanEngine" json:"scan_engine" csv:"ScanEngine"`
-	Error      string        `xml:"Error,omitempty" json:"error,omitempty" csv:"Error"`
-	ThreatIntel interface{}  `xml:"-" json:"threat_intel,omitempty" csv:"-"`
+	FilePath    string         `xml:"FilePath" json:"file_path" csv:"FilePath"`
+	Infected    bool           `xml:"Infected" json:"infected" csv:"Infected"`
+	Threats     []ExportThreat `xml:"Threats>Threat" json:"threats"`
+	ScanEngine  string         `xml:"ScanEngine" json:"scan_engine" csv:"ScanEngine"`
+	Error       string         `xml:"Error,omitempty" json:"error,omitempty" csv:"Error"`
+	ThreatIntel interface{}    `xml:"-" json:"threat_intel,omitempty" csv:"-"`
 }
 
 // ExportThreat is a serialization-friendly version of Threat

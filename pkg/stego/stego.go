@@ -28,10 +28,10 @@ type Analysis struct {
 
 // Indicator represents a suspicious indicator
 type Indicator struct {
-	Type        string  // "lsb", "entropy", "chi-square", "signature"
+	Type        string // "lsb", "entropy", "chi-square", "signature"
 	Description string
-	Severity    string  // "low", "medium", "high"
-	Confidence  int     // 0-100
+	Severity    string // "low", "medium", "high"
+	Confidence  int    // 0-100
 	Details     map[string]interface{}
 }
 
@@ -47,10 +47,10 @@ type LSBAnalysis struct {
 
 // StatisticalTests contains statistical analysis results
 type StatisticalTests struct {
-	ChiSquare      float64
+	ChiSquare       float64
 	ChiSquarePValue float64
-	HistogramFlat  bool
-	EntropyScore   float64
+	HistogramFlat   bool
+	EntropyScore    float64
 }
 
 // Signature represents a known steganography tool signature
@@ -63,10 +63,10 @@ type Signature struct {
 
 // Analyzer performs steganography analysis
 type Analyzer struct {
-	checkLSB         bool
-	checkStatistics  bool
-	checkSignatures  bool
-	minConfidence    int
+	checkLSB        bool
+	checkStatistics bool
+	checkSignatures bool
+	minConfidence   int
 }
 
 // NewAnalyzer creates a new steganography analyzer
@@ -207,13 +207,13 @@ func (a *Analyzer) analyzeLSB(img image.Image) *LSBAnalysis {
 				prevC := img.At(x-1, y)
 				prevR, prevG, prevB, _ := prevC.RGBA()
 
-				if ((r>>8)&1) != ((prevR>>8)&1) {
+				if ((r >> 8) & 1) != ((prevR >> 8) & 1) {
 					lsbChanges++
 				}
-				if ((g>>8)&1) != ((prevG>>8)&1) {
+				if ((g >> 8) & 1) != ((prevG >> 8) & 1) {
 					lsbChanges++
 				}
-				if ((b>>8)&1) != ((prevB>>8)&1) {
+				if ((b >> 8) & 1) != ((prevB >> 8) & 1) {
 					lsbChanges++
 				}
 			}
@@ -277,10 +277,10 @@ func (a *Analyzer) analyzeStatistics(img image.Image) *StatisticalTests {
 	entropyScore := calculatePixelEntropy(pixelValues)
 
 	return &StatisticalTests{
-		ChiSquare:      chiSquare,
+		ChiSquare:       chiSquare,
 		ChiSquarePValue: pValue,
-		HistogramFlat:  histogramFlat,
-		EntropyScore:   entropyScore,
+		HistogramFlat:   histogramFlat,
+		EntropyScore:    entropyScore,
 	}
 }
 
@@ -595,7 +595,7 @@ func hasGenericLSBPattern(data []byte) bool {
 	// Look for runs of bytes with LSB alternating
 	alternations := 0
 	for i := 1; i < len(data) && i < 10000; i++ {
-		if (data[i]&1) != (data[i-1]&1) {
+		if (data[i] & 1) != (data[i-1] & 1) {
 			alternations++
 		}
 	}

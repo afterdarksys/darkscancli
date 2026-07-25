@@ -292,11 +292,11 @@ func WriteSignatures(signatures map[SignatureType][]*Signature, outputDir string
 
 // Database represents a ClamAV database file
 type Database struct {
-	Name       string                           `json:"name"`
-	Version    int                              `json:"version"`
-	Builder    string                           `json:"builder"`
-	BuildTime  time.Time                        `json:"build_time"`
-	Signatures map[SignatureType][]*Signature   `json:"signatures"`
+	Name       string                         `json:"name"`
+	Version    int                            `json:"version"`
+	Builder    string                         `json:"builder"`
+	BuildTime  time.Time                      `json:"build_time"`
+	Signatures map[SignatureType][]*Signature `json:"signatures"`
 }
 
 // NewDatabase creates a new database

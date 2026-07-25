@@ -27,10 +27,10 @@ func DarkScan_New() C.uint64_t {
 	defer mu.Unlock()
 
 	s := scanner.New()
-	
+
 	// Default to registering heuristics for the library
 	s.RegisterEngine(heuristics.New())
-	
+
 	// ClamAV is registered via init conditionally
 	registerClamAV(s)
 

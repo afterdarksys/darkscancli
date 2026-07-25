@@ -135,5 +135,3 @@ func (e *Engine) Update(ctx context.Context) error {
 func (e *Engine) Close() error {
 	return nil
 }
-
-

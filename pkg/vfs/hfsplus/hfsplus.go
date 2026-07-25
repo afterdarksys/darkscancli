@@ -13,12 +13,12 @@ import (
 
 // HFSPlus represents an HFS+ filesystem
 type HFSPlus struct {
-	source        vfs.Partition
-	header        VolumeHeader
-	catalogTree   *BTree
-	extentsTree   *BTree
+	source         vfs.Partition
+	header         VolumeHeader
+	catalogTree    *BTree
+	extentsTree    *BTree
 	attributesTree *BTree
-	journal       *JournalInfoBlock
+	journal        *JournalInfoBlock
 }
 
 // New creates a new HFS+ filesystem parser
@@ -391,33 +391,33 @@ type FileEntry struct {
 // GetVolumeInfo returns volume information
 func (hfs *HFSPlus) GetVolumeInfo() VolumeInfo {
 	return VolumeInfo{
-		Signature:    hfs.header.Signature,
-		Version:      hfs.header.Version,
-		BlockSize:    hfs.header.BlockSize,
-		TotalBlocks:  hfs.header.TotalBlocks,
-		FreeBlocks:   hfs.header.FreeBlocks,
-		FileCount:    hfs.header.FileCount,
-		FolderCount:  hfs.header.FolderCount,
-		CreateDate:   ParseHFSTime(hfs.header.CreateDate),
-		ModifyDate:   ParseHFSTime(hfs.header.ModifyDate),
-		IsJournaled:  hfs.header.Attributes&AttrVolumeJournaled != 0,
-		IsEncrypted:  false, // Would need additional detection
+		Signature:   hfs.header.Signature,
+		Version:     hfs.header.Version,
+		BlockSize:   hfs.header.BlockSize,
+		TotalBlocks: hfs.header.TotalBlocks,
+		FreeBlocks:  hfs.header.FreeBlocks,
+		FileCount:   hfs.header.FileCount,
+		FolderCount: hfs.header.FolderCount,
+		CreateDate:  ParseHFSTime(hfs.header.CreateDate),
+		ModifyDate:  ParseHFSTime(hfs.header.ModifyDate),
+		IsJournaled: hfs.header.Attributes&AttrVolumeJournaled != 0,
+		IsEncrypted: false, // Would need additional detection
 	}
 }
 
 // VolumeInfo contains volume information
 type VolumeInfo struct {
-	Signature    uint16
-	Version      uint16
-	BlockSize    uint32
-	TotalBlocks  uint32
-	FreeBlocks   uint32
-	FileCount    uint32
-	FolderCount  uint32
-	CreateDate   time.Time
-	ModifyDate   time.Time
-	IsJournaled  bool
-	IsEncrypted  bool
+	Signature   uint16
+	Version     uint16
+	BlockSize   uint32
+	TotalBlocks uint32
+	FreeBlocks  uint32
+	FileCount   uint32
+	FolderCount uint32
+	CreateDate  time.Time
+	ModifyDate  time.Time
+	IsJournaled bool
+	IsEncrypted bool
 }
 
 // GetExtendedAttributes retrieves extended attributes for a file

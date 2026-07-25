@@ -14,13 +14,13 @@ import (
 type Type string
 
 const (
-	TypePE      Type = "pe"
-	TypeELF     Type = "elf"
-	TypeMachO   Type = "macho"
-	TypeScript  Type = "script"
-	TypeArchive Type = "archive"
+	TypePE       Type = "pe"
+	TypeELF      Type = "elf"
+	TypeMachO    Type = "macho"
+	TypeScript   Type = "script"
+	TypeArchive  Type = "archive"
 	TypeDocument Type = "document"
-	TypeUnknown Type = "unknown"
+	TypeUnknown  Type = "unknown"
 )
 
 // Sample represents a malware sample or file
@@ -34,26 +34,26 @@ type Sample struct {
 
 // PEInfo contains PE-specific information
 type PEInfo struct {
-	Machine          string            `json:"machine"`
-	Characteristics  uint16            `json:"characteristics"`
-	Subsystem        string            `json:"subsystem"`
-	Sections         []PESection       `json:"sections"`
-	Imports          []string          `json:"imports"`
-	Exports          []string          `json:"exports"`
-	Resources        int               `json:"resources"`
-	CompilationTime  uint32            `json:"compilation_time"`
-	ImageBase        uint64            `json:"image_base"`
+	Machine         string      `json:"machine"`
+	Characteristics uint16      `json:"characteristics"`
+	Subsystem       string      `json:"subsystem"`
+	Sections        []PESection `json:"sections"`
+	Imports         []string    `json:"imports"`
+	Exports         []string    `json:"exports"`
+	Resources       int         `json:"resources"`
+	CompilationTime uint32      `json:"compilation_time"`
+	ImageBase       uint64      `json:"image_base"`
 }
 
 // PESection represents a PE section
 type PESection struct {
-	Name             string  `json:"name"`
-	VirtualSize      uint32  `json:"virtual_size"`
-	VirtualAddress   uint32  `json:"virtual_address"`
-	RawSize          uint32  `json:"raw_size"`
-	RawAddress       uint32  `json:"raw_address"`
-	Characteristics  uint32  `json:"characteristics"`
-	Entropy          float64 `json:"entropy"`
+	Name            string  `json:"name"`
+	VirtualSize     uint32  `json:"virtual_size"`
+	VirtualAddress  uint32  `json:"virtual_address"`
+	RawSize         uint32  `json:"raw_size"`
+	RawAddress      uint32  `json:"raw_address"`
+	Characteristics uint32  `json:"characteristics"`
+	Entropy         float64 `json:"entropy"`
 }
 
 // ELFInfo contains ELF-specific information

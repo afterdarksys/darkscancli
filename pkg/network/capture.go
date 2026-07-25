@@ -11,11 +11,11 @@ import (
 
 // CaptureOptions defines the configuration for a network capture session.
 type CaptureOptions struct {
-	Interface string
+	Interface   string
 	Promiscuous bool
 	SnapshotLen int32
-	Timeout time.Duration
-	BPFFilter string
+	Timeout     time.Duration
+	BPFFilter   string
 }
 
 // PacketCapturer provides an OS-agnostic interface for capturing traffic.

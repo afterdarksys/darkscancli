@@ -36,7 +36,7 @@ func Walk(root string, fn func(path string, info os.FileInfo, err error) error) 
 		if info.IsDir() && IsSystemDirectory(path) {
 			return filepath.SkipDir
 		}
-		
+
 		// Dispatch to standard handler
 		if err := fn(path, info, nil); err != nil {
 			return err

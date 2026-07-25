@@ -10,31 +10,31 @@ import (
 
 // SuspiciousPermissions that extensions shouldn't normally need
 var suspiciousPermissions = map[string]string{
-	"<all_urls>":           "Access to all websites",
-	"webRequest":           "Monitor all web requests",
-	"webRequestBlocking":   "Block/modify web requests",
-	"proxy":                "Control network proxy",
-	"cookies":              "Access cookies on all sites",
-	"history":              "Access browsing history",
-	"tabs":                 "Access tab information",
-	"management":           "Manage other extensions",
-	"debugger":             "Attach debugger to pages",
-	"desktopCapture":       "Capture desktop",
-	"nativeMessaging":      "Communicate with native apps",
-	"privacy":              "Modify privacy settings",
-	"system.storage":       "Access system storage info",
-	"topSites":             "Access most visited sites",
-	"webNavigation":        "Track navigation events",
+	"<all_urls>":         "Access to all websites",
+	"webRequest":         "Monitor all web requests",
+	"webRequestBlocking": "Block/modify web requests",
+	"proxy":              "Control network proxy",
+	"cookies":            "Access cookies on all sites",
+	"history":            "Access browsing history",
+	"tabs":               "Access tab information",
+	"management":         "Manage other extensions",
+	"debugger":           "Attach debugger to pages",
+	"desktopCapture":     "Capture desktop",
+	"nativeMessaging":    "Communicate with native apps",
+	"privacy":            "Modify privacy settings",
+	"system.storage":     "Access system storage info",
+	"topSites":           "Access most visited sites",
+	"webNavigation":      "Track navigation events",
 }
 
 // ExtensionManifest represents a simplified Chrome extension manifest
 type ExtensionManifest struct {
-	Name        string   `json:"name"`
-	Version     string   `json:"version"`
-	Description string   `json:"description"`
-	Permissions []string `json:"permissions"`
+	Name            string   `json:"name"`
+	Version         string   `json:"version"`
+	Description     string   `json:"description"`
+	Permissions     []string `json:"permissions"`
 	HostPermissions []string `json:"host_permissions"` // Manifest V3
-	UpdateURL   string   `json:"update_url"`
+	UpdateURL       string   `json:"update_url"`
 }
 
 // ScanExtensions scans browser extensions for suspicious permissions
