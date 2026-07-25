@@ -20,7 +20,7 @@ jobs:
       - name: Install native scanner dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libclamav-dev libpcap-dev libyara-dev
+          sudo apt-get install -y libclamav-dev libpcap-dev libunicorn-dev libyara-dev
       - name: Formatting
         run: test -z "$(gofmt -l .)"
       - name: Vet
