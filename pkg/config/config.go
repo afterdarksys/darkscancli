@@ -26,8 +26,8 @@ type SandboxConfig struct {
 type DaemonConfig struct {
 	DaemonEndpoint  string `json:"daemon_endpoint"`
 	AutoFallback    bool   `json:"auto_fallback"`
-	RequestTimeout  string `json:"request_timeout"`   // Default: "1h"
-	ConnectTimeout  string `json:"connect_timeout"`   // Default: "3s"
+	RequestTimeout  string `json:"request_timeout"`    // Default: "1h"
+	ConnectTimeout  string `json:"connect_timeout"`    // Default: "3s"
 	MaxUploadSizeMB int    `json:"max_upload_size_mb"` // Default: 500
 	DaemonToken     string `json:"daemon_token"`       // Bearer token
 }
@@ -58,10 +58,10 @@ type ViperConfig struct {
 }
 
 type DarkAPIConfig struct {
-	Enabled            bool                     `json:"enabled"`
-	APIKey             string                   `json:"api_key"`
-	BaseURL            string                   `json:"base_url"`
-	Features           DarkAPIFeaturesConfig    `json:"features"`
+	Enabled  bool                  `json:"enabled"`
+	APIKey   string                `json:"api_key"`
+	BaseURL  string                `json:"base_url"`
+	Features DarkAPIFeaturesConfig `json:"features"`
 }
 
 type DarkAPIFeaturesConfig struct {
@@ -176,6 +176,17 @@ func Load(path string) (*Config, error) {
 	if err := json.Unmarshal(data, &config); err != nil {
 		return nil, fmt.Errorf("failed to parse config file: %w", err)
 	}
+	// Prefer environment variables for secrets so config files can be backed up
+	// without embedding credentials.
+	if value := os.Getenv("DARKSCAN_DAEMON_TOKEN"); value != "" {
+		config.Daemon.DaemonToken = value
+	}
+	if value := os.Getenv("DARKAPI_API_KEY"); value != "" {
+		config.DarkAPI.APIKey = value
+	}
+	if value := os.Getenv("FILEHASHES_API_KEY"); value != "" {
+		config.FileHashes.APIKey = value
+	}
 
 	return &config, nil
 }
@@ -187,11 +198,11 @@ func (c *Config) Save(path string) error {
 	}
 
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0700); err != nil {
 		return fmt.Errorf("failed to create config directory: %w", err)
 	}
 
-	if err := os.WriteFile(path, data, 0644); err != nil {
+	if err := os.WriteFile(path, data, 0600); err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
 

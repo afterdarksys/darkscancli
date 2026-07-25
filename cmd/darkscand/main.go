@@ -27,6 +27,9 @@ var (
 	licensePath string
 	listenAddr  string
 	unixSocket  string
+	scanRoot    string
+	tlsCert     string
+	tlsKey      string
 )
 
 var rootCmd = &cobra.Command{
@@ -39,8 +42,11 @@ func init() {
 	defaultConfigPath, _ := config.GetDefaultConfigPath()
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config", "c", defaultConfigPath, "Config file path")
 	rootCmd.PersistentFlags().StringVar(&licensePath, "license", "/etc/darkscan/license.json", "Commercial license file path")
-	rootCmd.PersistentFlags().StringVarP(&listenAddr, "listen", "l", "127.0.0.1:8080", "TCP address to listen on")
+	rootCmd.PersistentFlags().StringVarP(&listenAddr, "listen", "l", "", "TLS TCP address to listen on (disabled by default)")
 	rootCmd.PersistentFlags().StringVarP(&unixSocket, "socket", "s", "/tmp/darkscand.sock", "Unix socket path to listen on")
+	rootCmd.PersistentFlags().StringVar(&scanRoot, "scan-root", "", "Required directory boundary for daemon-local scans")
+	rootCmd.PersistentFlags().StringVar(&tlsCert, "tls-cert", "", "PEM certificate for TCP listener")
+	rootCmd.PersistentFlags().StringVar(&tlsKey, "tls-key", "", "PEM private key for TCP listener")
 }
 
 func main() {
@@ -77,6 +83,12 @@ func runServer(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("config error: %w", err)
 	}
+	if cfg.Daemon.DaemonToken == "" {
+		return fmt.Errorf("daemon.daemon_token is required")
+	}
+	if scanRoot == "" {
+		return fmt.Errorf("--scan-root is required")
+	}
 
 	if err := license.Load(licensePath); err != nil {
 		log.Printf("Notice: No valid commercial license found at %s. Running in community mode.", licensePath)
@@ -102,7 +114,7 @@ func runServer(cmd *cobra.Command, args []string) error {
 		if err == nil {
 			s.RegisterEngine(clamavEngine)
 			defer clamavEngine.Close()
-			
+
 			// Background Updater Ticker
 			if cfg.ClamAV.AutoUpdate && cfg.ClamAV.MirrorURL != "" {
 				interval, err := time.ParseDuration(cfg.ClamAV.UpdateInterval)
@@ -177,9 +189,11 @@ func runServer(cmd *cobra.Command, args []string) error {
 	log.Println("Scanning engines initialized and loaded into memory.")
 
 	// Start server
-	srv := server.NewServer(s, listenAddr, unixSocket, cfg.Daemon.MaxUploadSizeMB)
-	if cfg.Daemon.DaemonToken != "" {
-		srv = srv.WithAuthToken(cfg.Daemon.DaemonToken)
+	srv := server.NewServer(s, listenAddr, unixSocket, cfg.Daemon.MaxUploadSizeMB).
+		WithAuthToken(cfg.Daemon.DaemonToken).
+		WithScanRoot(scanRoot)
+	if listenAddr != "" {
+		srv = srv.WithTLS(tlsCert, tlsKey)
 	}
 
 	errChan := make(chan error, 1)

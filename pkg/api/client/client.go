@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/afterdarksys/darkscan/pkg/api/server"
@@ -42,6 +44,9 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 // NewClient attempts to discover a daemon.
 // It returns a non-nil client if a daemon is found and responsive.
 func NewClient(configDaemonURL string, unixSocket string, authToken string, requestTimeout, connectTimeout time.Duration) (*Client, error) {
+	if authToken == "" {
+		return nil, fmt.Errorf("daemon bearer token is required")
+	}
 	if requestTimeout == 0 {
 		requestTimeout = 1 * time.Hour
 	}
@@ -51,6 +56,18 @@ func NewClient(configDaemonURL string, unixSocket string, authToken string, requ
 
 	// Try config daemon first
 	if configDaemonURL != "" {
+		parsed, err := url.Parse(configDaemonURL)
+		if err != nil || parsed.Hostname() == "" {
+			return nil, fmt.Errorf("invalid daemon endpoint")
+		}
+		loopback := parsed.Hostname() == "localhost" ||
+			parsed.Hostname() == "127.0.0.1" || parsed.Hostname() == "::1"
+		if parsed.Scheme != "https" && !(parsed.Scheme == "http" && loopback) {
+			return nil, fmt.Errorf("remote daemon endpoint must use HTTPS")
+		}
+		if parsed.User != nil && (strings.Contains(parsed.User.String(), "@") || parsed.User.String() != "") {
+			return nil, fmt.Errorf("daemon endpoint must not contain credentials")
+		}
 		httpClient := &http.Client{
 			Transport: &authTransport{token: authToken},
 			Timeout:   requestTimeout,
@@ -135,13 +152,13 @@ func (c *Client) ScanStream(path string) ([]*scanner.ScanResult, error) {
 		return nil, err
 	}
 	defer file.Close()
-	
+
 	resp, err := c.httpClient.Post(c.baseURL+"/scan/stream", "application/octet-stream", file)
 	if err != nil {
 		return nil, fmt.Errorf("daemon connection error: %w", err)
 	}
 	defer resp.Body.Close()
-	
+
 	return c.parseResponse(resp)
 }
 

@@ -139,6 +139,21 @@ darkscan scan --clamav --yara --capa --viper /path/to/file
 
 The configuration file is located at `$HOME/.darkscan/config.json`:
 
+Configuration files are created with owner-only (`0600`) permissions. Prefer
+`DARKSCAN_DAEMON_TOKEN`, `DARKAPI_API_KEY`, and `FILEHASHES_API_KEY` environment
+variables over storing credentials in the JSON file.
+
+The daemon is local-only by default and requires both a bearer token and an
+explicit scan boundary:
+
+```bash
+export DARKSCAN_DAEMON_TOKEN="$(openssl rand -hex 32)"
+darkscand --scan-root /srv/darkscan-input
+```
+
+Enabling TCP additionally requires `--tls-cert` and `--tls-key`. Remote daemon
+clients must use HTTPS; plaintext HTTP is accepted only for loopback addresses.
+
 ```json
 {
   "clamav": {

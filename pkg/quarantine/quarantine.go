@@ -8,12 +8,22 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"time"
 )
 
 // Manager handles quarantine operations
 type Manager struct {
 	quarantineDir string
+}
+
+var validID = regexp.MustCompile(`^[0-9]{8}_[0-9]{6}_[a-f0-9]{8}$`)
+
+func (m *Manager) entryDir(id string) (string, error) {
+	if !validID.MatchString(id) {
+		return "", fmt.Errorf("invalid quarantine entry ID")
+	}
+	return filepath.Join(m.quarantineDir, id), nil
 }
 
 // QuarantineEntry represents metadata for a quarantined file
@@ -125,7 +135,10 @@ func (m *Manager) List() ([]*QuarantineEntry, error) {
 
 // Restore restores a quarantined file to its original location or a specified path
 func (m *Manager) Restore(id string, targetPath string) error {
-	entryDir := filepath.Join(m.quarantineDir, id)
+	entryDir, err := m.entryDir(id)
+	if err != nil {
+		return err
+	}
 	metadataPath := filepath.Join(entryDir, "metadata.json")
 
 	entry, err := m.loadMetadata(metadataPath)
@@ -166,7 +179,10 @@ func (m *Manager) Restore(id string, targetPath string) error {
 
 // Delete permanently deletes a quarantined file
 func (m *Manager) Delete(id string) error {
-	entryDir := filepath.Join(m.quarantineDir, id)
+	entryDir, err := m.entryDir(id)
+	if err != nil {
+		return err
+	}
 
 	// Verify entry exists
 	if _, err := os.Stat(entryDir); err != nil {
@@ -183,7 +199,11 @@ func (m *Manager) Delete(id string) error {
 
 // GetEntry retrieves a specific quarantine entry by ID
 func (m *Manager) GetEntry(id string) (*QuarantineEntry, error) {
-	metadataPath := filepath.Join(m.quarantineDir, id, "metadata.json")
+	entryDir, err := m.entryDir(id)
+	if err != nil {
+		return nil, err
+	}
+	metadataPath := filepath.Join(entryDir, "metadata.json")
 	return m.loadMetadata(metadataPath)
 }
 

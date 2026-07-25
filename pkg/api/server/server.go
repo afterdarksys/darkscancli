@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"crypto/subtle"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,19 +26,21 @@ import (
 )
 
 type Server struct {
-	scanner         *scanner.Scanner
-	listenAddr      string
-	unixSocket      string
-	httpServer      *http.Server
-	unixListener    net.Listener
-	tcpListener     net.Listener
-	wg              sync.WaitGroup
-	doneChan        chan struct{}
-	maxUploadBytes  int64
-	startTime       time.Time
-	store           *store.Store
-	authToken       string
-	scanRoot        string
+	scanner        *scanner.Scanner
+	listenAddr     string
+	unixSocket     string
+	httpServer     *http.Server
+	unixListener   net.Listener
+	tcpListener    net.Listener
+	wg             sync.WaitGroup
+	doneChan       chan struct{}
+	maxUploadBytes int64
+	startTime      time.Time
+	store          *store.Store
+	authToken      string
+	scanRoot       string
+	tlsCert        string
+	tlsKey         string
 }
 
 func NewServer(s *scanner.Scanner, listenAddr, unixSocket string, maxUploadMB int) *Server {
@@ -73,13 +76,14 @@ func (s *Server) WithScanRoot(root string) *Server {
 	return s
 }
 
+// WithTLS enables verified HTTPS on the TCP listener.
+func (s *Server) WithTLS(certFile, keyFile string) *Server {
+	s.tlsCert, s.tlsKey = certFile, keyFile
+	return s
+}
+
 func (s *Server) requireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if s.authToken == "" {
-			next(w, r)
-			return
-		}
-
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
 			s.sendError(w, "Unauthorized: missing or invalid authorization header", http.StatusUnauthorized)
@@ -97,6 +101,12 @@ func (s *Server) requireAuth(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *Server) Start() error {
+	if s.authToken == "" {
+		return fmt.Errorf("daemon bearer token is required")
+	}
+	if s.scanRoot == "" {
+		return fmt.Errorf("daemon scan root is required")
+	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ping", s.handlePing)
 	mux.HandleFunc("/status", s.requireAuth(s.handleStatus))
@@ -127,7 +137,7 @@ func (s *Server) Start() error {
 		// Set permissions for local CLI access (0660 = owner and group can read/write)
 		// More secure than 0666 which allows any user
 		os.Chmod(s.unixSocket, 0660)
-		
+
 		s.wg.Add(1)
 		go func() {
 			defer s.wg.Done()
@@ -140,12 +150,23 @@ func (s *Server) Start() error {
 
 	// Start TCP Listener
 	if s.listenAddr != "" {
+		if s.tlsCert == "" || s.tlsKey == "" {
+			return fmt.Errorf("TCP listener requires --tls-cert and --tls-key")
+		}
 		tcpL, err := net.Listen("tcp", s.listenAddr)
 		if err != nil {
 			return err
 		}
-		s.tcpListener = tcpL
-		
+		certificate, err := tls.LoadX509KeyPair(s.tlsCert, s.tlsKey)
+		if err != nil {
+			tcpL.Close()
+			return fmt.Errorf("load TLS certificate: %w", err)
+		}
+		s.tcpListener = tls.NewListener(tcpL, &tls.Config{
+			MinVersion:   tls.VersionTLS12,
+			Certificates: []tls.Certificate{certificate},
+		})
+
 		s.wg.Add(1)
 		go func() {
 			defer s.wg.Done()
@@ -197,16 +218,16 @@ type ScanResponse struct {
 }
 
 type StatusResponse struct {
-	Status    string            `json:"status"`
-	Engines   []EngineStatus    `json:"engines"`
-	Uptime    string            `json:"uptime"`
-	Version   string            `json:"version"`
+	Status  string         `json:"status"`
+	Engines []EngineStatus `json:"engines"`
+	Uptime  string         `json:"uptime"`
+	Version string         `json:"version"`
 }
 
 type EngineStatus struct {
-	Name      string `json:"name"`
-	Enabled   bool   `json:"enabled"`
-	Version   string `json:"version,omitempty"`
+	Name       string `json:"name"`
+	Enabled    bool   `json:"enabled"`
+	Version    string `json:"version,omitempty"`
 	LastUpdate string `json:"last_update,omitempty"`
 }
 
@@ -327,7 +348,11 @@ func (s *Server) handleScanLocal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if s.scanRoot != "" && !strings.HasPrefix(req.Path, "s3://") && !strings.HasPrefix(req.Path, "nfs://") && !strings.HasPrefix(req.Path, "ntfs://") {
+	if strings.Contains(req.Path, "://") {
+		s.sendError(w, "Remote VFS paths are not accepted by /scan/local", http.StatusBadRequest)
+		return
+	}
+	if s.scanRoot != "" {
 		absPath, err := filepath.EvalSymlinks(req.Path)
 		if err != nil {
 			s.sendError(w, "Invalid path", http.StatusBadRequest)
@@ -340,7 +365,8 @@ func (s *Server) handleScanLocal(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if !strings.HasPrefix(absPath, absRoot+string(filepath.Separator)) && absPath != absRoot {
+		relative, err := filepath.Rel(absRoot, absPath)
+		if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
 			s.sendError(w, "Access Denied: Path outside allowed scan root", http.StatusForbidden)
 			return
 		}
@@ -349,10 +375,10 @@ func (s *Server) handleScanLocal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Performing local scan of path: %s (recursive: %v)", req.Path, req.Recursive)
-	
+
 	start := time.Now()
 	ctx := r.Context()
-	
+
 	var results []*scanner.ScanResult
 	var err error
 
@@ -403,7 +429,7 @@ func (s *Server) handleScanLocal(w http.ResponseWriter, r *http.Request) {
 	} else {
 		scanClient = s.scanner.WithVFS(local.New())
 	}
-	
+
 	var info os.FileInfo
 	if scanClient.FS != nil {
 		info, err = scanClient.FS.Stat(req.Path)
@@ -415,7 +441,7 @@ func (s *Server) handleScanLocal(w http.ResponseWriter, r *http.Request) {
 		s.sendError(w, "File not found or inaccessible: "+err.Error(), http.StatusNotFound)
 		return
 	}
-	
+
 	if info.IsDir() {
 		results, err = scanClient.ScanDirectory(ctx, req.Path, req.Recursive)
 	} else {
